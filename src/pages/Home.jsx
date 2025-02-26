@@ -3,7 +3,7 @@ import React from "react";
 function Home() {
 
     return(
-        <h1>Welcome modafaka</h1>
+        <h1>Welcome!</h1>
     )
 }
 
