@@ -6,7 +6,11 @@ import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import AdminDashboard from "./pages/AdminDashboard";
-import AdminRoute from "./components/AdminRoute"; 
+import AdminRoute from "./components/AdminRoute";
+import StoresPage from "./pages/StoresPage";
+import CreateStore from "./pages/CreateStore";
+import StoreDetails from "./pages/StoreDetails";
+import EditStorePage from "./pages/EditStorePage";
 
 function Logout() {
   localStorage.clear()
@@ -45,6 +49,25 @@ function App() {
             </AdminRoute>
           }
         />
+
+        {/* list of stores - anyone can access */}
+        <Route path="/stores" element={<StoresPage />} />
+        <Route path="/stores/create"
+          element={
+            <ProtectedRoute>
+              <CreateStore />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/store/:id" element={<StoreDetails />} />
+        <Route path="/store/:id/edit" 
+          element={
+            <ProtectedRoute>
+              <EditStorePage />
+            </ProtectedRoute>
+          }
+        />
+
 
       </Routes>
     </BrowserRouter>

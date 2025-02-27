@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import AdminStoreManagement from "../components/AdminStoreManagement"
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -61,6 +62,8 @@ const AdminDashboard = () => {
                     ))}
                 </tbody>
             </table>
+
+            <AdminStoreManagement />
         </div>
     );
 };

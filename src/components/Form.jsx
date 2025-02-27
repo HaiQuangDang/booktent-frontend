@@ -9,6 +9,7 @@ function Form({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const name = method === "login" ? "Login" : "Register";
@@ -16,6 +17,7 @@ function Form({ route, method }) {
     const handleSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
+        setErrorMessage(""); // Clear previous error message
 
         try {
             const res = await api.post(route, { username, password })
@@ -27,7 +29,11 @@ function Form({ route, method }) {
                 navigate("/login")
             }
         } catch (error) {
-            alert(error)
+            if (error.response && error.response.status === 401) {
+                setErrorMessage("Invalid username or password."); // Show error message
+            } else {
+                setErrorMessage("Something went wrong. Please try again.");
+            }
         } finally {
             setLoading(false)
         }
@@ -36,6 +42,7 @@ function Form({ route, method }) {
     return (
         <form onSubmit={handleSubmit} className="form-container">
             <h1>{name}</h1>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
             <input
                 className="form-input"
                 type="text"
