@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import api from "../api";
-import AdminStoreManagement from "../components/AdminStoreManagement"
+import api from "../../api";
+import AdminStoreManagement from "../../components/admin/AdminStoreManagement"
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import api from "../api";
-import LoadingIndicator from "./LoadingIndicator";
+import api from "../../api";
+import LoadingIndicator from "../LoadingIndicator";
 
 function AdminStoreManagement() {
     const [stores, setStores] = useState([]);

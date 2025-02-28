@@ -1,16 +1,20 @@
 import React from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
-import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
+import Home from "./pages/Home"
+
+//authentication
+import Login from "./pages/authentication/Login"
+import Register from "./pages/authentication/Register"
 import ProtectedRoute from "./components/ProtectedRoute"
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminRoute from "./components/AdminRoute";
-import StoresPage from "./pages/StoresPage";
-import CreateStore from "./pages/CreateStore";
-import StoreDetails from "./pages/StoreDetails";
-import EditStorePage from "./pages/EditStorePage";
+//admin
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminRoute from "./components/admin/AdminRoute";
+//stores
+import StoresPage from "./pages/stores/StoresPage";
+import CreateStore from "./pages/stores/CreateStore";
+import StoreDetails from "./pages/stores/StoreDetails";
+import EditStorePage from "./pages/stores/EditStorePage";
 
 function Logout() {
   localStorage.clear()

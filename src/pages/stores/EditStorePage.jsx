@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api";
-import "../styles/Form.css"
+import api from "../../api";
+import "../../styles/Form.css"
 function EditStorePage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ function EditStorePage() {
                 // Only allow the owner to edit
                 if (res.data.owner !== userRes.data.username) {
                     setErrorMessage("You are not the owner of this store!");
-                    setTimeout(() => navigate("/"), 2000); // Redirect after 2 seconds
+                    setTimeout(() => navigate("/stores"), 2000); // Redirect after 2 seconds
                     return;
                 }
                 setStore({

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api";
+import api from "../../api";
 import { jwtDecode } from "jwt-decode";
-import { ACCESS_TOKEN } from "../constants";
+import { ACCESS_TOKEN } from "../../constants";
 
 function StoreDetails() {
     const { id } = useParams();
