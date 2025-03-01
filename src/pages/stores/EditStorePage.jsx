@@ -14,7 +14,7 @@ function EditStorePage() {
         const fetchStore = async () => {
             console.log(id)
             try {
-                const res = await api.get(`/store/${id}/`);
+                const res = await api.get(`/stores/${id}/`);
                 const userRes = await api.get("/user/me/");
 
                 // Only allow the owner to edit
@@ -65,7 +65,7 @@ function EditStorePage() {
                 formData.append("logo", store.logo);
             }
 
-            await api.patch(`/store/${id}/`, formData, {
+            await api.patch(`/stores/${id}/`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 

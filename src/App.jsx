@@ -2,14 +2,16 @@ import React from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import NotFound from "./pages/NotFound"
 import Home from "./pages/Home"
+import { ACCESS_TOKEN } from "./constants"
+
+//layouts
+import Header from "./components/layouts/Header"
 
 //authentication
 import Login from "./pages/authentication/Login"
 import Register from "./pages/authentication/Register"
 import ProtectedRoute from "./components/ProtectedRoute"
-//admin
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminRoute from "./components/admin/AdminRoute";
+
 //stores
 import StoresPage from "./pages/stores/StoresPage";
 import CreateStore from "./pages/stores/CreateStore";
@@ -18,7 +20,7 @@ import EditStorePage from "./pages/stores/EditStorePage";
 
 function Logout() {
   localStorage.clear()
-  return <Navigate to="/login" />
+  return <Navigate to="/" />
 }
 
 function RegisterAndLogout() {
@@ -26,33 +28,23 @@ function RegisterAndLogout() {
   return <Register />
 }
 
+const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN)
+
 function App() {
   return (
+    <>
+    {/* <Header /> */}
     <BrowserRouter>
       <Routes>
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
-        <Route path="*" element={<NotFound />}></Route>
+        {/* Home - Anyone can access */}
+        <Route path="/" element={<Home />} />
 
-        {/* Admin Dashboard - Only Admins Can Access */}
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
-          }
-        />
+        {/* Redirect logged-in users from Login & Register */}
+        <Route path="/login" element={isAuthenticated() ? <Navigate to="/" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated() ? <Navigate to="/" /> : <RegisterAndLogout />} />
+
+        <Route path="/logout" element={<Logout />} />
 
         {/* list of stores - anyone can access */}
         <Route path="/stores" element={<StoresPage />} />
@@ -64,7 +56,7 @@ function App() {
           }
         />
         <Route path="/store/:id" element={<StoreDetails />} />
-        <Route path="/store/:id/edit" 
+        <Route path="/store/:id/edit"
           element={
             <ProtectedRoute>
               <EditStorePage />
@@ -72,9 +64,10 @@ function App() {
           }
         />
 
-
+        <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </BrowserRouter>
+    </>
   )
 }
 

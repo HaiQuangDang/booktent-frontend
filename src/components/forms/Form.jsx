@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import { ACCESS_TOKEN, REFRESH_TOKEN, USER } from "../../constants";
 import "../../styles/Form.css"
 import LoadingIndicator from "../LoadingIndicator";
 
@@ -24,10 +24,17 @@ function Form({ route, method }) {
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+
+                const userRes = await api.get("/user/me/");
+                localStorage.setItem(USER, JSON.stringify(userRes.data));
+
+
                 navigate("/")
             } else {
                 navigate("/login")
             }
+
+
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 setErrorMessage("Invalid username or password."); // Show error message

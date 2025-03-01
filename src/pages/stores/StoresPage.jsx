@@ -11,9 +11,8 @@ function StoresPage() {
 
     const fetchStores = async () => {
         try {
-            const res = await api.get("/store/");
+            const res = await api.get("/stores/");
             console.log(res)
-
             setStores(res.data);
         } catch (error) {
             console.error("Error fetching stores:", error);

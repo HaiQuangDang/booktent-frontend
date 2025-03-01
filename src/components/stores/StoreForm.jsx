@@ -20,7 +20,7 @@ function StoreForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await api.post("/store/", {
+            const res = await api.post("/stores/", {
                 name,
                 description,
                 contact_info: contactInfo,

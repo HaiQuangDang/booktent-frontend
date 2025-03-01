@@ -15,7 +15,7 @@ function StoreDetails() {
     useEffect(() => {
         const fetchStore = async () => {
             try {
-                const res = await api.get(`/store/${id}/`);
+                const res = await api.get(`/stores/${id}/`);
                 setStore(res.data);
             } catch (err) {
                 setError("Store not found");
