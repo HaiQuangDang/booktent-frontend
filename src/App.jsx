@@ -1,71 +1,81 @@
-import React from "react"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import NotFound from "./pages/NotFound"
-import Home from "./pages/Home"
-import { ACCESS_TOKEN } from "./constants"
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import NotFound from "./pages/NotFound";
+import Home from "./pages/Home";
+import { ACCESS_TOKEN } from "./constants";
 
-//authentication
-import Login from "./pages/authentication/Login"
-import Register from "./pages/authentication/Register"
-import ProtectedRoute from "./components/ProtectedRoute"
+// Authentication
+import Login from "./pages/authentication/Login";
+import Register from "./pages/authentication/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-//stores
+// Stores
 import StoresPage from "./pages/stores/StoresPage";
 import CreateStore from "./pages/stores/CreateStore";
 import StoreDetails from "./pages/stores/StoreDetails";
 import EditStorePage from "./pages/stores/EditStorePage";
 
+// Books
+import BookManager from "./pages/books/BookManager";
+
 function Logout() {
-  localStorage.clear()
-  return <Navigate to="/" />
+  localStorage.clear();
+  return <Navigate to="/" />;
 }
 
 function RegisterAndLogout() {
-  localStorage.clear()
-  return <Register />
+  localStorage.clear();
+  return <Register />;
 }
 
-const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN)
+const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN);
 
 function App() {
   return (
     <>
-    {/* <Header /> */}
-    <BrowserRouter>
-      <Routes>
+      {/* <Header /> */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={isAuthenticated() ? <Navigate to="/" /> : <Login />} />
+          <Route path="/register" element={isAuthenticated() ? <Navigate to="/" /> : <RegisterAndLogout />} />
+          <Route path="/logout" element={<Logout />} />
 
-        {/* Home - Anyone can access */}
-        <Route path="/" element={<Home />} />
+          {/* Stores */}
+          <Route path="/stores" element={<StoresPage />} />
+          <Route
+            path="/stores/create"
+            element={
+              <ProtectedRoute>
+                <CreateStore />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/store/:id" element={<StoreDetails />} />
+          <Route
+            path="/store/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditStorePage />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Redirect logged-in users from Login & Register */}
-        <Route path="/login" element={isAuthenticated() ? <Navigate to="/" /> : <Login />} />
-        <Route path="/register" element={isAuthenticated() ? <Navigate to="/" /> : <RegisterAndLogout />} />
+          {/* Books */}
+          <Route
+            path="/books/manage"
+            element={
+              <ProtectedRoute>
+                <BookManager />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/logout" element={<Logout />} />
-
-        {/* list of stores - anyone can access */}
-        <Route path="/stores" element={<StoresPage />} />
-        <Route path="/stores/create"
-          element={
-            <ProtectedRoute>
-              <CreateStore />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/store/:id" element={<StoreDetails />} />
-        <Route path="/store/:id/edit"
-          element={
-            <ProtectedRoute>
-              <EditStorePage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route path="*" element={<NotFound />}></Route>
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

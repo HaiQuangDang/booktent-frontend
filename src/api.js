@@ -21,20 +21,22 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.log("Interceptor triggered:", error.response?.status);
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log("Attempting token refresh...");
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/token/refresh/`, {
-          refresh: refreshToken,
-        });
+        const refresh = localStorage.getItem(REFRESH_TOKEN);
+        console.log("Refresh token:", refresh);
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/token/refresh/`, { refresh });
+        console.log("New access token:", res.data.access);
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
-        return api(originalRequest); // Retry original request
+        return api(originalRequest);
       } catch (refreshError) {
-        console.error("Token refresh failed:", refreshError);
-        // Optionally redirect to login: window.location.href = "/login";
+        console.error("Refresh failed:", refreshError);
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
