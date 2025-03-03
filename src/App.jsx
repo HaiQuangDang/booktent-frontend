@@ -4,9 +4,6 @@ import NotFound from "./pages/NotFound"
 import Home from "./pages/Home"
 import { ACCESS_TOKEN } from "./constants"
 
-//layouts
-import Header from "./components/layouts/Header"
-
 //authentication
 import Login from "./pages/authentication/Login"
 import Register from "./pages/authentication/Register"

@@ -1,69 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { USER } from "../constants";
-import { useEffect, useState } from "react";
 import api from "../api";
 
-
 function Home() {
-    const [user, setUser] = useState(null)
-    const [mystore, setMystore] = useState(null)
+  const [user, setUser] = useState(null);
+  const [mystore, setMystore] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        const fetchMyStore = async () => {
+  useEffect(() => {
+    const fetchMyStore = async () => {
+      const storedUser = localStorage.getItem(USER);
+      if (!storedUser) {
+        setLoading(false);
+        return;
+      }
+      setUser(JSON.parse(storedUser));
+      try {
+        const myStoreRes = await api.get("/stores/mine/");
+        if (myStoreRes.data && !myStoreRes.data.detail) {
+          setMystore(myStoreRes.data);
+        }
+      } catch (error) {
+        setError("Failed to load store data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMyStore();
+  }, []);
 
-            if (localStorage.getItem(USER)) {
-                setUser(JSON.parse(localStorage.getItem(USER)))
-                try {
-                    const myStoreRes = await api.get("/stores/mine/");
-                    console.log(myStoreRes)
-                    if (myStoreRes.data && !myStoreRes.data.detail) {
-                        setMystore(myStoreRes.data)
-                    } else if (myStoreRes.data.detail) {
-                        console.log(myStoreRes.data.detail)
-                    }
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
-            }
+  if (loading) return <div>Loading...</div>;
 
-        };
-        fetchMyStore();
-
-    }, []);
-
-
-    return (
-        <div>
-
-            <h1>Welcome! {user ? user.username : "Guess"}</h1>
-            {user === null ?
-                (
-                    <Link to="/login">
-                        Login
-                    </Link>
-                ) : (
-                    <Link to="/logout">
-                        Logout
-                    </Link>
-                )
-            }
-
-            {mystore ?
-                (
-                    <Link to={`/store/${mystore.id}`}>
-                        My Store
-                    </Link>
-                ) : (
-                    <Link to="/stores/create">
-                        Create Store
-                    </Link>
-                )
-            }
-
-        </div>
-
-    )
+  return (
+    <div>
+      <h1>Welcome! {user ? user.username : "Guest"}</h1>
+      {error && <p>{error}</p>}
+      {user ? (
+        <Link to="/logout">Logout</Link>
+      ) : (
+        <Link to="/login">Login</Link>
+      )}
+      {mystore ? (
+        <>
+          <Link to={`/store/${mystore.id}`}>My Store</Link>
+          <Link to="/books/manage">Manage Books</Link> {/* Added for convenience */}
+        </>
+      ) : (
+        <Link to="/stores/create">Create Store</Link>
+      )}
+    </div>
+  );
 }
 
 export default Home;
