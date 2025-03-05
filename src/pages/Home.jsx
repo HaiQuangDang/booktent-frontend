@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { USER } from "../constants";
 import api from "../api";
+import Header from "../components/layouts/Header";
+import BookList from "../components/books/BookList";
 
 function Home() {
   const [user, setUser] = useState(null);
-  const [mystore, setMystore] = useState(null);
+  const [myStore, setMystore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -35,21 +37,10 @@ function Home() {
 
   return (
     <div>
+      <Header user={user} myStore={myStore} />
       <h1>Welcome! {user ? user.username : "Guest"}</h1>
       {error && <p>{error}</p>}
-      {user ? (
-        <Link to="/logout">Logout</Link>
-      ) : (
-        <Link to="/login">Login</Link>
-      )}
-      {mystore ? (
-        <>
-          <Link to={`/store/${mystore.id}`}>My Store</Link>
-          <Link to="/books/manage">Manage Books</Link> {/* Added for convenience */}
-        </>
-      ) : (
-        <Link to="/stores/create">Create Store</Link>
-      )}
+      <BookList />
     </div>
   );
 }
