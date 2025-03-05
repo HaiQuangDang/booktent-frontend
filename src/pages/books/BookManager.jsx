@@ -86,12 +86,12 @@ const BookManager = () => {
 
     try {
       if (editingBookId) {
-        await api.put(`/books/${editingBookId}/`, data, {
+        await api.put(`/books/book/${editingBookId}/`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         setEditingBookId(null);
       } else {
-        await api.post("/books/", data, {
+        await api.post("/books/book/", data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
@@ -113,7 +113,7 @@ const BookManager = () => {
   // Fetch books
   const fetchBooks = async () => {
     try {
-      const response = await api.get("/books/");
+      const response = await api.get("/books/book/");
       setBooks(response.data);
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to refresh books.");

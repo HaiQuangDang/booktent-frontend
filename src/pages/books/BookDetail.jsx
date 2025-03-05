@@ -16,7 +16,7 @@ function BookDetail() {
 
     const fetchBook = async () => {
         try {
-            const response = await api.get(`/books/${id}/`);
+            const response = await api.get(`/books/book/${id}/`);
             console.log(response)
             setBook(response.data);
         } catch (error) {

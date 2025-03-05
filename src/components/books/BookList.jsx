@@ -13,7 +13,7 @@ function BookList() {
   // Fetch books
   const fetchBooks = async () => {
     try {
-      const response = await api.get("/books/");
+      const response = await api.get("/books/homepage/");
       setBooks(response.data);
     } catch (err) {
       console.log(err.response?.data?.detail || "Failed to refresh books.");
