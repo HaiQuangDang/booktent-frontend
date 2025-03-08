@@ -19,6 +19,8 @@ import EditStorePage from "./pages/stores/EditStorePage";
 import BookManager from "./pages/books/BookManager";
 import WishList from "./pages/user/WishList";
 import BookDetail from "./pages/books/BookDetail";
+import EditBookPage from "./pages/books/EditBookPage";
+import AddBookPage from "./pages/books/AddBookPage";
 
 function Logout() {
   localStorage.clear();
@@ -73,9 +75,10 @@ function App() {
             }
           />
           <Route path="/books/:id" element={<BookDetail />} />
+          <Route path="/books/:id/edit" element={<EditBookPage />} />
+          <Route path="/books/add" element={<AddBookPage />} />
 
           {/* User */}
-
           <Route path="/wishlist" element={<WishList />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -26,7 +26,7 @@ function BookList() {
       <h1 className="text-2xl font-bold mb-4">Book List</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {books.map((book) => (
-          <Link key={book.id} to={`books/${book.id}`}>
+          <Link key={book.id} to={`/books/${book.id}`}>
             <div className="bg-white shadow-md rounded-lg p-4 border">
             {book.cover_image && (
               <img

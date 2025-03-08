@@ -4,6 +4,7 @@ import api from "../../api";
 import { jwtDecode } from "jwt-decode";
 import { ACCESS_TOKEN } from "../../constants";
 import BookOwn from "../../components/stores/BookOwn";
+import { Link } from "react-router-dom";
 
 function StoreDetails() {
     const { id } = useParams();
@@ -79,13 +80,13 @@ function StoreDetails() {
                 {/* Show Edit Button only if user owns the store */}
                 {store.owner === username && (
                     <div className="flex space-x-4">
-                        <button 
+                        <button
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                             onClick={() => navigate(`/store/${id}/edit`)}
                         >
                             Edit Store
                         </button>
-                        <button 
+                        <button
                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                             onClick={() => handleDelete(store.id)}
                         >
@@ -96,6 +97,12 @@ function StoreDetails() {
             </div>
 
             <div className="mt-8">
+                <Link to={"/books/add"}>
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Add Book
+                    </button>
+                </Link>
                 <BookOwn books={store.books} />
             </div>
         </div>

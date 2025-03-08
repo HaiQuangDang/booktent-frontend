@@ -33,7 +33,7 @@ const BookManager = () => {
         if (storeRes.data && !storeRes.data.detail) {
           setIsStoreOwner(true);
           setFormData((prev) => ({ ...prev, store: storeRes.data.id }));
-          const booksRes = await api.get("/books/");
+          const booksRes = await api.get("/books/book/");
           setBooks(booksRes.data);
         } else {
           setError("You need to own a store to manage books.");
