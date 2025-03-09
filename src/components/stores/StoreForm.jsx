@@ -9,15 +9,6 @@ function StoreForm() {
     const [errorStoreName, setErrorStoreName] = useState("");
     const navigate = useNavigate();
 
-
-    // const token = localStorage.getItem(ACCESS_TOKEN);
-
-    // if (!token) {
-    //     alert("You must be logged in to create a store!");
-    //     navigate("/login");
-    //     return;
-    // }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {

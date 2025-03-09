@@ -41,15 +41,15 @@ function StoreDetails() {
         if (!window.confirm("Are you sure you want to delete your store?")) return;
 
         try {
-            await api.delete(`/store/${id}/`);
+            await api.delete(`/stores/${id}/`);
             alert("Store deleted successfully.");
-            navigate("/stores");
+            navigate("/");
         } catch (error) {
-            if (error.response && error.response.data) {
-                alert(error.response.data.detail); // Show error message from backend
-            } else {
-                alert("An error occurred while deleting the user.");
-            }
+            // if (error.response && error.response.data) {
+            //     alert(error.response.data.detail); // Show error message from backend
+            // } else {
+            //     alert("An error occurred while deleting the user.");
+            // }
             console.error("Error deleting user:", error);
         }
     };
