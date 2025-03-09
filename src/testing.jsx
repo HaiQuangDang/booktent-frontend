@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProtectedRoute from '../../components/ProtectedRoute';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../../api';
 import { USER } from '../../constants';
 
@@ -12,8 +12,6 @@ const EditBookPage = () => {
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
-  const [removeImage, setRemoveImage] = useState(false);
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -63,10 +61,9 @@ const EditBookPage = () => {
           published_year: book.published_year,
           store: book.store,
           cover_image: null,
-          authors: book.authors.map((author) => author.id),
-          genres: book.genres.map((genre) => genre.id),
+          authors: book.authors.map((author) => author.id), // Pre-select authors
+          genres: book.genres.map((genre) => genre.id), // Pre-select genres
         });
-
         setPreviewImage(book.cover_image);
       } else {
         setError("You need to own a store to manage books.");
@@ -78,14 +75,6 @@ const EditBookPage = () => {
     }
   };
 
-  // Handle cancel button
-  const handleCancel = () => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.");
-    if (confirmCancel) {
-      navigate(`/store/${formData.store}`);
-    }
-  };
-  
   // Handle text input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -93,12 +82,8 @@ const EditBookPage = () => {
 
   // Handle file input change
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, cover_image: file });
-      setPreviewImage(URL.createObjectURL(file));
-      setRemoveImage(false); // Reset removal flag
-    }
+    setFormData({ ...formData, cover_image: e.target.files[0] });
+    setPreviewImage(URL.createObjectURL(file));
   };
 
   // Handle multi-select change
@@ -110,11 +95,6 @@ const EditBookPage = () => {
     setFormData({ ...formData, [name]: selectedValues });
   };
 
-  const handleRemoveImage = () => {
-    setPreviewImage(null);
-    setFormData({ ...formData, cover_image: null }); // Clear the file
-    setRemoveImage(true); // Mark for removal
-  };
 
 
   // Create or Update a book
@@ -155,7 +135,7 @@ const EditBookPage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Book updated successfully.");
-      navigate(`/store/${formData.store}`);
+      fetchData();
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to save book.");
       console.log(err);
@@ -193,6 +173,7 @@ const EditBookPage = () => {
           className="form-input"
         />
 
+        {/* Authors Multi-Select (Auto-selected and visible) */}
         <label htmlFor="authors">Authors</label>
         <select
           id="authors"
@@ -210,6 +191,7 @@ const EditBookPage = () => {
           ))}
         </select>
 
+        {/* Genres Multi-Select (Auto-selected and visible) */}
         <label htmlFor="genres">Genres</label>
         <select
           id="genres"
@@ -261,15 +243,22 @@ const EditBookPage = () => {
           required
           className="form-input"
         />
+        <label htmlFor="cover_image" className="visually-hidden">Cover Image</label>
+        <input
+          id="cover_image"
+          type="file"
+          name="cover_image"
+          onChange={handleFileChange}
+          accept="image/*"
+          className="form-input"
+        // Required only for new books
+        />
         {previewImage && (
           <div className="image-preview">
             <img src={previewImage} alt="Book Cover" style={{ maxWidth: "200px", marginBottom: "10px" }} />
-            <button type="button" onClick={handleRemoveImage} className="remove-button">
-              Remove Image
-            </button>
           </div>
         )}
-        <label htmlFor="cover_image" className="visually-hidden">Cover Image</label>
+        <label htmlFor="cover_image">Change Cover Image</label>
         <input
           id="cover_image"
           type="file"
@@ -281,7 +270,7 @@ const EditBookPage = () => {
         <button type="submit" className="form-button">
           Update Book
         </button>
-        <button type="button" className="form-button cancel" onClick={handleCancel}>
+        <button type="button" className="form-button cancel">
           Cancel
         </button>
 

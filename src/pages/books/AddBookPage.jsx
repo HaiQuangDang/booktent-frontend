@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import api from "../../api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AddBookPage = () => {
     const [error, setError] = useState("");
@@ -11,6 +11,7 @@ const AddBookPage = () => {
     const [genres, setGenres] = useState([]);
     const fileInputRef = useRef(null);
     const [coverPreview, setCoverPreview] = useState(null);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -293,7 +294,7 @@ const AddBookPage = () => {
                             authors: [],
                             genres: [],
                         });
-                        fetchData();
+                        navigate(`/store/${formData.store}`)
                     }}
                 >
                     Cancel

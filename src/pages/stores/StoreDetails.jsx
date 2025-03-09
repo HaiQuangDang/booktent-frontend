@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
-import { jwtDecode } from "jwt-decode";
-import { ACCESS_TOKEN } from "../../constants";
+import {USER} from "../../constants";
 import BookOwn from "../../components/stores/BookOwn";
 import { Link } from "react-router-dom";
 
@@ -11,36 +10,29 @@ function StoreDetails() {
     const [store, setStore] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [username, setUsername] = useState(null);
+    // const [username, setUsername] = useState(null);
+    const [isOwner, setIsOwner] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchStore = async () => {
             try {
-                const res = await api.get(`/stores/${id}/`);
-                setStore(res.data);
+                const storeRes = await api.get(`/stores/${id}/`);
+                setStore(storeRes.data);
+                console.log("store", storeRes.data);
+                const user = JSON.parse(localStorage.getItem(USER)); // ✅ Parse it
+                console.log("user", user);
+                
+                if (user && user.username === storeRes.data.owner) { // ✅ Ensure user exists
+                    setIsOwner(true);
+                }
             } catch (err) {
                 setError("Store not found");
             } finally {
                 setLoading(false);
             }
         };
-        const fetchUsername = async () => {
-            const token = localStorage.getItem(ACCESS_TOKEN);
-            if (token) {
-                const decoded = jwtDecode(token);
-                try {
-                    const res = await api.get(`/user/me/`); // Fetch user details
-                    console.log(res)
-                    setUsername(res.data.username); // Store the username
-                } catch (error) {
-                    console.error("Error fetching user:", error);
-                }
-            }
-        };
-
         fetchStore();
-        fetchUsername();
 
     }, [id]);
 
@@ -78,7 +70,7 @@ function StoreDetails() {
                 <p className="text-gray-700 mb-4"><strong>Created At:</strong> {new Date(store.created_at).toLocaleDateString()}</p>
 
                 {/* Show Edit Button only if user owns the store */}
-                {store.owner === username && (
+                {isOwner && (
                     <div className="flex space-x-4">
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -96,15 +88,17 @@ function StoreDetails() {
                 )}
             </div>
 
-            <div className="mt-8">
+
+            {isOwner && (
                 <Link to={"/books/add"}>
                     <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                     >
                         Add Book
                     </button>
                 </Link>
-                <BookOwn books={store.books} />
-            </div>
+            )}
+            <BookOwn books={store.books} isOwner={isOwner}/>
+
         </div>
     );
 }
