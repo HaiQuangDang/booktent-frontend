@@ -24,18 +24,6 @@ function BookDetail() {
             setErrorMessage(error.response?.data?.detail || "Failed to fetch book.")
         }
     }
-
-    // Delete a book
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this book?")) {
-            try {
-                await api.delete(`/books/book/${id}/`);
-                navigate("/");
-            } catch (err) {
-                setError(err.response?.data?.detail || "Failed to delete book.");
-            }
-        }
-    };
     return (
         <div className="container mx-auto p-4">
             {book && (

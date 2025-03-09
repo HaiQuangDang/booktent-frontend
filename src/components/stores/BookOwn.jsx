@@ -1,9 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import api from "../../api";
 
 const BookOwn = ({ books, isOwner }) => {
 
-  console.log(books);
+  // Delete a book
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this book?")) {
+      try {
+        await api.delete(`/books/book/${id}/`);
+        alert("Book deleted successfully.");
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        alert(err.response?.data?.detail || "Failed to delete book.");
+      }
+    }
+  };
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Book List</h1>
@@ -34,7 +48,7 @@ const BookOwn = ({ books, isOwner }) => {
                   </button>
                 </Link>
                 <button
-                  // onClick={() => handleDelete(book.id)}
+                  onClick={() => handleDelete(book.id)}
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Delete

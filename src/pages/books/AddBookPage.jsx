@@ -124,19 +124,20 @@ const AddBookPage = () => {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             alert("Book added successfully!");
-            handleRemoveImage();
-            setFormData({
-                title: "",
-                description: "",
-                price: "",
-                stock_quantity: "",
-                published_year: "",
-                store: formData.store,
-                cover_image: null,
-                authors: [],
-                genres: [],
-            });
-            fetchData();
+            // handleRemoveImage();
+            // setFormData({
+            //     title: "",
+            //     description: "",
+            //     price: "",
+            //     stock_quantity: "",
+            //     published_year: "",
+            //     store: formData.store,
+            //     cover_image: null,
+            //     authors: [],
+            //     genres: [],
+            // });
+            // fetchData();
+            navigate(`/store/${formData.store}`)
         } catch (err) {
             console.log(err);
             setError(err.response?.data?.detail || "Failed to save book.");
