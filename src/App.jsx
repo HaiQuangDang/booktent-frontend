@@ -10,7 +10,7 @@ import Register from "./pages/authentication/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Stores
-import StoresPage from "./pages/stores/StoresPage";
+// import StoresPage from "./pages/stores/StoresPage";
 import CreateStore from "./pages/stores/CreateStore";
 import StoreDetails from "./pages/stores/StoreDetails";
 import EditStorePage from "./pages/stores/EditStorePage";
@@ -46,15 +46,8 @@ function App() {
           <Route path="/logout" element={<Logout />} />
 
           {/* Stores */}
-          <Route path="/stores" element={<StoresPage />} />
-          <Route
-            path="/stores/create"
-            element={
-              <ProtectedRoute>
-                <CreateStore />
-              </ProtectedRoute>
-            }
-          />
+          {/* <Route path="/stores" element={<StoresPage />} /> */}
+          <Route path="/store/create" element={<CreateStore />}/>
           <Route path="/store/:id" element={<StoreDetails />} />
           <Route
             path="/store/:id/edit"
