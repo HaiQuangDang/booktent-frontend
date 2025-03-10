@@ -2,15 +2,17 @@ import { useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER } from "../../constants";
-import "../../styles/Form.css";
 import LoadingIndicator from "../LoadingIndicator";
 
 function Form({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [email, setEmail] = useState(""); // New email state
+    const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [errorUsername, setErrorUsername] = useState("");
+    const [errorPassword, setErrorPassword] = useState("");
+    const [errorEmail, setErrorEmail] = useState("");
     const navigate = useNavigate();
 
     const name = method === "login" ? "Login" : "Register";
@@ -47,40 +49,69 @@ function Form({ route, method }) {
                 navigate("/login");
             }
         } catch (error) {
-            console.log(error.response)
-            setErrorMessage(
-                error.response?.data?.detail ||
-                error.response?.data?.username?.[0] ||
-                error.response?.data?.email?.[0] || // Handle email-specific errors
-                (error.response?.status === 401
-                    ? "Invalid username or password."
-                    : "Something went wrong. Please try again.")
-            );
+            console.error("An error occurred:", error);
+            if (error.response?.data) {
+                if (error.response.data.username) {
+                    // errors.push(error.response.data.username[0]);
+                    setErrorUsername(error.response.data.username[0]);
+                }
+                if (error.response.data.email) {
+                    // errors.push(error.response.data.email[0]);
+                    setErrorEmail(error.response.data.email[0]);
+                }
+                if (error.response.data.detail) {
+                    // errors.push(error.response.data.detail);
+                    setErrorMessage(error.response.data.detail);
+                }
+            } else {
+                setErrorMessage(
+                    error.response?.status === 401
+                        ? "Invalid username or password."
+                        : "Something went wrong. Please try again."
+                );
+            }
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>{name}</h1>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+            <h1 className="text-2xl font-bold mb-6">{name}</h1>
+            {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
 
-            <label htmlFor="username" className="visually-hidden">Username</label>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
             <input
                 id="username"
-                className="form-input"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
                 required
             />
+            {errorUsername && <p className="text-red-500 text-sm mt-1">{errorUsername}</p>}
 
-            <label htmlFor="password" className="visually-hidden">Password</label>
+            {method === "register" && (
+                <>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mt-4">Email</label>
+                    <input
+                        id="email"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email"
+                        required
+                    />
+                    {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
+                </>
+            )}
+
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mt-4">Password</label>
             <input
                 id="password"
-                className="form-input"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -88,39 +119,24 @@ function Form({ route, method }) {
                 required
             />
 
-            {method === "register" && (
-                <>
-                    <label htmlFor="email" className="visually-hidden">Email</label>
-                    <input
-                        id="email"
-                        className="form-input"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
-                        required
-                    />
-                </>
-            )}
-
             {loading && <LoadingIndicator />}
-            <button className="form-button" type="submit" disabled={loading}>
+            <button className="mt-6 w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" type="submit" disabled={loading}>
                 {name}
             </button>
+
+            {method === "login" && (
+                <p className="mt-4 text-center text-sm text-gray-600">
+                    Don't have an account? <a href="/register" className="text-indigo-600 hover:text-indigo-500">Register</a>
+                </p>
+            )}
+
+            {method === "register" && (
+                <p className="mt-4 text-center text-sm text-gray-600">
+                    Already have an account? <a href="/login" className="text-indigo-600 hover:text-indigo-500">Login</a>
+                </p>
+            )}
         </form>
     );
 }
 
 export default Form;
-
-// Optional CSS for accessibility (already suggested earlier)
-// .visually-hidden {
-//   position: absolute;
-//   width: 1px;
-//   height: 1px;
-//   padding: 0;
-//   margin: -1px;
-//   overflow: hidden;
-//   clip: rect(0, 0, 0, 0);
-//   border: 0;
-// }
