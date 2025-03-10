@@ -35,10 +35,10 @@ function BookDetail() {
                     />
                     <h1 className="text-2xl font-bold mb-2">Title: {book.title}</h1>
                     <p className="text-gray-700 mb-2">Description: {book.description}</p>
-                    <p className="text-gray-700 mb-2">Author: {book.authors}</p>
+                    <p className="text-gray-700 mb-2">Author: {book.author_names}</p>
                     <p className="text-gray-700 mb-2">Price: ${book.price}</p>
                     <p className="text-gray-700 mb-2">Publish Year: {book.published_year}</p>
-                    <p className="text-gray-700 mb-2">Sold by: {book.store_name}</p>
+                    <p className="text-gray-700 mb-2">Sold by:<Link to={`/store/${book.store}`}>{book.store_name}</Link></p>
                     <p className="text-gray-700 mb-2">Status: {book.stock_quantity} books available</p>
                     
                 </div>

@@ -21,7 +21,7 @@ const AddBookPage = () => {
         stock_quantity: "",
         published_year: "",
         store: "",
-        cover_image: null, // New field for file
+        cover_image: null,
     });
 
     const fetchData = async () => {
@@ -30,6 +30,12 @@ const AddBookPage = () => {
             if (!storeRes.data || storeRes.data.detail) {
                 setError("You need to own a store to add books.");
                 return;
+            }
+            if (storeRes.data.status !== "active") {
+                setError("Only store owners with an active store can add books.")
+                setIsStoreOwner(true)
+                alert("Your store is not active. You will be redirected.");
+               navigate(`/store/${storeRes.data.id}`);
             }
             setIsStoreOwner(true);
             setFormData((prev) => ({ ...prev, store: storeRes.data.id }));
@@ -192,6 +198,7 @@ const AddBookPage = () => {
                     value={formData.authors || []}
                     onChange={handleMultiSelectChange}
                     className="form-input"
+                    required
                 >
                     {authors.map((author) => (
                         <option key={author.id} value={author.id}>
@@ -208,6 +215,7 @@ const AddBookPage = () => {
                     value={formData.genres || []}
                     onChange={handleMultiSelectChange}
                     className="form-input"
+                    required
                 >
                     {genres.map((genre) => (
                         <option key={genre.id} value={genre.id}>

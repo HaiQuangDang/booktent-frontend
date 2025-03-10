@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
-import {USER} from "../../constants";
+import { USER } from "../../constants";
 import BookOwn from "../../components/stores/BookOwn";
 import { Link } from "react-router-dom";
 
@@ -22,7 +22,7 @@ function StoreDetails() {
                 console.log("store", storeRes.data);
                 const user = JSON.parse(localStorage.getItem(USER)); // ✅ Parse it
                 console.log("user", user);
-                
+
                 if (user && user.username === storeRes.data.owner) { // ✅ Ensure user exists
                     setIsOwner(true);
                 }
@@ -87,17 +87,21 @@ function StoreDetails() {
                     </div>
                 )}
             </div>
-
-
             {isOwner && (
-                <Link to={"/books/add"}>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                <Link to={store.status === "active" ? "/books/add" : "#"}>
+                    <button
+                        className={`px-4 py-2 rounded ${store.status === "active"
+                                ? "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-gray-400 text-gray-700 cursor-not-allowed"
+                            }`}
+                        disabled={store.status !== "active"}
                     >
                         Add Book
                     </button>
                 </Link>
             )}
-            <BookOwn books={store.books} isOwner={isOwner}/>
+
+            <BookOwn books={store.books} isOwner={isOwner} />
 
         </div>
     );
