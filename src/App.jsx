@@ -29,6 +29,7 @@ import GenreDetail from "./pages/genre/GenreDetail";
 
 // User
 import Profile from "./pages/user/Profile"
+import Setting from "./pages/user/Setting";
 
 
 function Logout() {
@@ -72,6 +73,11 @@ function App() {
 
           {/* User */}
           <Route path="/profile" element={<Profile />} />
+          <Route path="/setting" element={<Setting />} />
+
+
+
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

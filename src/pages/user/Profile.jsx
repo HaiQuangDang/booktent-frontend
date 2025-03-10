@@ -19,7 +19,7 @@ const Profile = () => {
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Profile</h2>
             <div className="flex flex-col items-center">
                 <img
-                    src={user.profile?.avatar || "https://via.placeholder.com/150"}
+                    src={user.profile?.avatar}
                     alt="Avatar"
                     className="w-24 h-24 rounded-full mb-4 border-2 border-gray-300"
                 />
@@ -30,7 +30,7 @@ const Profile = () => {
                 </div>
                 <button
                     className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300"
-                    onClick={() => navigate("/settings")}
+                    onClick={() => navigate("/setting")}
                 >
                     Edit Profile
                 </button>

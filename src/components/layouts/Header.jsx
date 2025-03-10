@@ -19,9 +19,14 @@ export default function Header({ user, myStore }) {
       <div className="flex items-center gap-6">
         <div className="font-medium">
           {user ? (
-            <Link to="/logout" className="text-blue-500 hover:text-blue-700">
-              Logout
-            </Link>
+            <>
+              <Link to="/logout" className="text-blue-500 hover:text-blue-700">
+                Logout
+              </Link>
+              <Link to="/profile" className="text-blue-500 hover:text-blue-700">
+                My Profile
+              </Link>
+            </>
           ) : (
             <Link to="/login" className="text-blue-500 hover:text-blue-700">
               Login
@@ -30,14 +35,9 @@ export default function Header({ user, myStore }) {
         </div>
         <div className="font-medium flex gap-4">
           {myStore ? (
-            <>
-              <Link to={`/store/${myStore.id}`} className="text-blue-500 hover:text-blue-700">
-                My Store
-              </Link>
-              <Link to="/books/manage" className="text-blue-500 hover:text-blue-700">
-                Manage Books
-              </Link>
-            </>
+            <Link to={`/store/${myStore.id}`} className="text-blue-500 hover:text-blue-700">
+              My Store
+            </Link>
           ) : (
             <Link to="/store/create" className="text-blue-500 hover:text-blue-700">
               Create Store
