@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
 import "../../styles/Form.css"
+import ProtectedRoute from "../../components/ProtectedRoute";
+
 function EditStorePage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -80,7 +82,7 @@ function EditStorePage() {
     if (loading) return <div>Loading...</div>;
     if (errorMessage) return <div style={{ color: "red" }}>{errorMessage}</div>;
     return (
-        <div>
+        <ProtectedRoute>
             <h1>Edit Store</h1>
             <form className="form-container" onSubmit={handleSubmit}>
                 <label>Name:</label>
@@ -99,7 +101,7 @@ function EditStorePage() {
 
                 <button className="form-button" type="submit" disabled={loading}>{loading ? "Updating..." : "Update Store"}</button>
             </form>
-        </div>
+        </ProtectedRoute>
     );
 }
 

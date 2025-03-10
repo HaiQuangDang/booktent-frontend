@@ -35,18 +35,36 @@ function BookDetail() {
                     />
                     <h1 className="text-2xl font-bold mb-2">Title: {book.title}</h1>
                     <p className="text-gray-700 mb-2">Description: {book.description}</p>
-                    <p className="text-gray-700 mb-2">Author: {book.author_names}</p>
+                    <p className="text-gray-700 mb-2">
+                        <strong>Authors:</strong>{" "}
+                        {book.author_names.map((name, index) => (
+                            <span key={book.authors[index]}>
+                                <Link
+                                    to={`/author/${book.authors[index]}`}
+                                    className="text-blue-500 hover:text-blue-700 hover:underline transition duration-300"
+                                >
+                                    {name}
+                                </Link>
+                                {index < book.author_names.length - 1 ? ", " : ""}
+                            </span>
+                        ))}
+                    </p>
+                    <p className="text-gray-700 mb-2">Published Year: {book.published_year}</p>
                     <p className="text-gray-700 mb-2">Price: ${book.price}</p>
-                    <p className="text-gray-700 mb-2">Publish Year: {book.published_year}</p>
-                    <p className="text-gray-700 mb-2">Sold by:<Link to={`/store/${book.store}`}>{book.store_name}</Link></p>
-                    <p className="text-gray-700 mb-2">Status: {book.stock_quantity} books available</p>
-                    
+                    <p className="text-gray-700 mb-2">Stock: {book.stock_quantity ? book.stock_quantity + " books" : "Out of Stock"}</p>
+                    <p className="text-gray-700 mb-2">
+                        Sold by:{" "}
+                        <Link
+                            to={`/store/${book.store}`}
+                            className="text-blue-500 hover:text-blue-700 hover:underline transition duration-300"
+                        >
+                            {book.store_name}
+                        </Link>
+                    </p>
                 </div>
             )}
 
             {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
-
-
         </div>
     );
 }

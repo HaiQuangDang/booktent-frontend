@@ -16,11 +16,13 @@ import StoreDetails from "./pages/stores/StoreDetails";
 import EditStorePage from "./pages/stores/EditStorePage";
 
 // Books
-import BookManager from "./pages/books/BookManager";
-import WishList from "./pages/user/WishList";
+// import BookManager from "./pages/books/BookManager";
 import BookDetail from "./pages/books/BookDetail";
 import EditBookPage from "./pages/books/EditBookPage";
 import AddBookPage from "./pages/books/AddBookPage";
+
+// Authors
+import AuthorDetail from "./pages/author/AuthorDetail";
 
 function Logout() {
   localStorage.clear();
@@ -37,7 +39,6 @@ const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN);
 function App() {
   return (
     <>
-      {/* <Header /> */}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -46,33 +47,20 @@ function App() {
           <Route path="/logout" element={<Logout />} />
 
           {/* Stores */}
-          {/* <Route path="/stores" element={<StoresPage />} /> */}
           <Route path="/store/create" element={<CreateStore />}/>
           <Route path="/store/:id" element={<StoreDetails />} />
-          <Route
-            path="/store/:id/edit"
-            element={
-              <ProtectedRoute>
-                <EditStorePage />
-              </ProtectedRoute>
-            }
+          <Route path="/store/:id/edit" element={<EditStorePage />}
           />
 
           {/* Books */}
-          <Route
-            path="/books/manage"
-            element={
-              <ProtectedRoute>
-                <BookManager />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/books/:id" element={<BookDetail />} />
           <Route path="/books/:id/edit" element={<EditBookPage />} />
           <Route path="/books/add" element={<AddBookPage />} />
 
+          {/* Authors */}
+          <Route path="/author/:id" element={<AuthorDetail />} />
+
           {/* User */}
-          <Route path="/wishlist" element={<WishList />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
