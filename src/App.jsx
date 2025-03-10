@@ -27,6 +27,10 @@ import AuthorDetail from "./pages/author/AuthorDetail";
 // Genres
 import GenreDetail from "./pages/genre/GenreDetail";
 
+// User
+import Profile from "./pages/user/Profile"
+
+
 function Logout() {
   localStorage.clear();
   return <Navigate to="/" />;
@@ -67,6 +71,7 @@ function App() {
           <Route path="/genre/:id" element={<GenreDetail />} />
 
           {/* User */}
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
