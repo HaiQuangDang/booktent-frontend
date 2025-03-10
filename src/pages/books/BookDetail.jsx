@@ -50,6 +50,13 @@ function BookDetail() {
                         ))}
                     </p>
                     <p className="text-gray-700 mb-2">Published Year: {book.published_year}</p>
+                    <p className="text-gray-700 mb-2">
+                        Genres: {book.genre_names.map((name, index) => (
+                            <Link key={index} to={`/genre/${book.genres[index]}`} className="text-blue-500 hover:underline">
+                                {name}
+                            </Link>
+                        )).reduce((prev, curr) => [prev, ", ", curr])}
+                    </p>
                     <p className="text-gray-700 mb-2">Price: ${book.price}</p>
                     <p className="text-gray-700 mb-2">Stock: {book.stock_quantity ? book.stock_quantity + " books" : "Out of Stock"}</p>
                     <p className="text-gray-700 mb-2">

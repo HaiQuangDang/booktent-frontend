@@ -13,7 +13,6 @@ const AuthorDetail = () => {
         try {
             const authorRes = await api.get(`/books/authors/${id}/`);
             setAuthor(authorRes.data);
-            console.log("author", authorRes.data);
         } catch (err) {
             setError("Author not found");
         } finally {

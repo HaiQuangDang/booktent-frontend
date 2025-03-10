@@ -24,6 +24,9 @@ import AddBookPage from "./pages/books/AddBookPage";
 // Authors
 import AuthorDetail from "./pages/author/AuthorDetail";
 
+// Genres
+import GenreDetail from "./pages/genre/GenreDetail";
+
 function Logout() {
   localStorage.clear();
   return <Navigate to="/" />;
@@ -59,6 +62,9 @@ function App() {
 
           {/* Authors */}
           <Route path="/author/:id" element={<AuthorDetail />} />
+
+          {/* Genres */}
+          <Route path="/genre/:id" element={<GenreDetail />} />
 
           {/* User */}
           <Route path="*" element={<NotFound />} />
