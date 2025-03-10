@@ -19,7 +19,11 @@ function Form({ route, method }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Form submission prevented"); // Debug
         setErrorMessage("");
+        setErrorUsername("");
+        setErrorPassword("");
+        setErrorEmail("");
 
         // Basic client-side validation
         if (!username || !password) {
@@ -39,7 +43,8 @@ function Form({ route, method }) {
                 : { username, password, email };
 
             const res = await api.post(route, payload);
-            if (method === "login") {
+            console.log("API response:", res.data);
+            if (method === "login" && res.data) {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
                 const userRes = await api.get("/user/me/");
@@ -49,26 +54,23 @@ function Form({ route, method }) {
                 navigate("/login");
             }
         } catch (error) {
-            console.error("An error occurred:", error);
+            console.log(error)
+            console.error("Error details:", error.response?.data); // Log the exact response
             if (error.response?.data) {
-                if (error.response.data.username) {
-                    // errors.push(error.response.data.username[0]);
-                    setErrorUsername(error.response.data.username[0]);
+                const data = error.response.data;
+                if (data.username) setErrorUsername(data.username[0]);
+                if (data.email) setErrorEmail(data.email[0]);
+                else if (data.detail) {
+                    setErrorMessage(data.detail); // This should catch "No active account found..."
+                    console.log("Error message set to:", data.detail);
+                } else if (error.response.status === 401) {
+                    setErrorMessage("Invalid username or password."); // Fallback for 401
+                } else {
+                    setErrorMessage("Something went wrong. Please try again.");
                 }
-                if (error.response.data.email) {
-                    // errors.push(error.response.data.email[0]);
-                    setErrorEmail(error.response.data.email[0]);
-                }
-                if (error.response.data.detail) {
-                    // errors.push(error.response.data.detail);
-                    setErrorMessage(error.response.data.detail);
-                }
+
             } else {
-                setErrorMessage(
-                    error.response?.status === 401
-                        ? "Invalid username or password."
-                        : "Something went wrong. Please try again."
-                );
+                setErrorMessage("Network error. Please check your connection.");
             }
         } finally {
             setLoading(false);
@@ -76,7 +78,7 @@ function Form({ route, method }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+        <form noValidate onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold mb-6">{name}</h1>
             {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
 
