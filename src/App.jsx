@@ -32,8 +32,9 @@ import GenreDetail from "./pages/genre/GenreDetail";
 import Profile from "./pages/user/Profile"
 import Setting from "./pages/user/Setting";
 
-// Cart
-import Cart from "./pages/cart/Cart";
+// Order
+import Cart from "./pages/order/Cart";
+import OrderPage from "./pages/order/OrderPage";
 
 // Layout
 import Header from "./components/layouts/Header";
@@ -61,17 +62,14 @@ function App() {
       if (localStorage.getItem(USER)) {
         const storedUser = localStorage.getItem(USER);
         setUser(JSON.parse(storedUser));
-        console.log("storeUser", JSON.parse(storedUser))
         try {
           const myStoreRes = await api.get("/stores/mine/");
           if (myStoreRes.data && !myStoreRes.data.detail) {
             setMystore(myStoreRes.data);
-            console.log("My store: ", myStoreRes.data)
           }
           // fetch amount of cart items
           const cartRes = await api.get("/cart/");
           setCartItemCount(cartRes.data.items.length);
-          console.log("Items: ", cartRes.data.items.length)
         } catch (error) {
           console.error("Failed to load data.", error);
         }
@@ -123,9 +121,9 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/setting" element={<Setting />} />
 
-          {/* Cart */}
-          <Route path="/cart" element={<ProtectedRoute><Cart updateCartItemCount={updateCartItemCount}/></ProtectedRoute>} />
-
+          {/* Order */}
+          <Route path="/cart" element={<ProtectedRoute><Cart updateCartItemCount={updateCartItemCount} /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
