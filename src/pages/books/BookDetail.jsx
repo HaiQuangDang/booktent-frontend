@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ACCESS_TOKEN } from "../../constants";
 
-function BookDetail() {
+function BookDetail({updateCartItemCount}) {
     const { id } = useParams();
     const [book, setBook] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -51,6 +51,7 @@ function BookDetail() {
                 const res = await api.post("/cart/", { book_id: bookId, quantity: 1 });
                 alert("Book added to cart!");
                 checkIfInCart();
+                updateCartItemCount();
             }
         } catch (error) {
             console.error("Error adding to cart:", error);
@@ -104,7 +105,7 @@ function BookDetail() {
                     </p>
                     {inCart ? (
                         <Link to="/cart">
-                            <button className="bg-gray-500 text-white px-4 py-2 rounded">
+                            <button className="bg-blue-500 text-white px-4 py-2 rounded">
                                 In Cart
                             </button>
                         </Link>

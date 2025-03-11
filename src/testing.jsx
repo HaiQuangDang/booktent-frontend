@@ -1,118 +1,54 @@
-import { useEffect, useState } from "react";
-import api from "../../api";
+import Logo from "../../assets/logofit.svg";
+import { Link } from "react-router-dom";
+import ProtectedRoute from "../ProtectedRoute";
 
-const Setting = () => {
-  const [user, setUser] = useState({
-    username: "",
-    email: "",
-    profile: {
-      avatar: "",
-      address: "",
-    },
-  });
-
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userRes = await api.get("/user/me/");
-        setUser(userRes.data);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "address") {
-      setUser((prev) => ({
-        ...prev,
-        profile: { ...prev.profile, address: value },
-      }));
-    } else {
-      setUser((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setUpdating(true);
-
-    try {
-      await api.put("/user/update/", {
-        username: user.username,
-        email: user.email,
-        profile: { address: user.profile.address },
-      });
-      alert("Profile updated successfully!");
-    } catch (error) {
-      console.error("Update failed:", error);
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-
+export default function Header({ user, myStore }) {
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">Account Settings</h2>
-
-      {/* Avatar */}
-      <div className="flex items-center space-x-4 mb-4">
-        <img
-          src={user.profile.avatar || "/default-avatar.jpg"}
-          alt="Profile Avatar"
-          className="w-16 h-16 rounded-full border"
-        />
-        <div>
-          <p className="text-lg font-semibold">{user.username}</p>
-          <p className="text-gray-500">{user.email}</p>
-        </div>
+    <header className="shadow-md py-4 px-6 flex items-center justify-between bg-white">
+      <div className="flex items-center">
+        <img src={Logo} alt="BookTent Logo" className="w-50" />
       </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="relative w-1/3">
         <input
           type="text"
-          name="username"
-          value={user.username}
-          onChange={handleChange}
-          placeholder="Username"
-          className="w-full p-2 border rounded"
+          placeholder="Search books..."
+          className="w-full p-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <input
-          type="email"
-          name="email"
-          value={user.email}
-          onChange={handleChange}
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-        />
-        <textarea
-          name="address"
-          value={user.profile.address || ""}
-          onChange={handleChange}
-          placeholder="Address"
-          className="w-full p-2 border rounded"
-        />
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded"
-          disabled={updating}
-        >
-          {updating ? "Updating..." : "Update Profile"}
-        </button>
-      </form>
-    </div>
+        <div className="absolute right-3 top-2.5 text-gray-500">🔍</div>
+      </div>
+      <div className="flex items-center gap-6">
+        <div className="font-medium flex gap-4">
+          {myStore ? (
+            <Link to={`/store/${myStore.id}`} className="text-blue-500 hover:text-blue-700">
+              My Store
+            </Link>
+          ) : (
+            <Link to="/store/create" className="text-blue-500 hover:text-blue-700">
+              Create Store
+            </Link>
+          )}
+        </div>
+        <div className="relative"></div>
+        {user ? (
+          <div className="relative">
+            <button className="text-blue-500 hover:text-blue-700">
+              My Profile
+            </button>
+            <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
+              <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                Profile
+              </Link>
+              <Link to="/logout" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                Logout
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <Link to="/login" className="text-blue-500 hover:text-blue-700">
+            Login
+          </Link>
+        )}
+      </div>
+    </header>
   );
-};
-
-export default Setting;
+}

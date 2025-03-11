@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api"
 
-const Cart = () => {
+const Cart = ({updateCartItemCount}) => {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -28,6 +28,7 @@ const Cart = () => {
                 ...prev,
                 items: prev.items.filter((item) => item.id !== itemId),
             }));
+            updateCartItemCount();  // 🔥 Update Cart Badge
         } catch (error) {
             console.error("Error removing item:", error);
         }
@@ -48,6 +49,7 @@ const Cart = () => {
             //     ),
             // }));
             setCart(res.data)
+            updateCartItemCount(); // update Cart Badge
         } catch (error) {
             console.error("Error updating quantity:", error);
         }
@@ -59,6 +61,7 @@ const Cart = () => {
         try {
             await api.delete("/cart/clear/");
             setCart({ items: [] });
+            updateCartItemCount();  // 🔥 Update Cart Badge
         } catch (error) {
             console.error("Error clearing cart:", error);
         }
