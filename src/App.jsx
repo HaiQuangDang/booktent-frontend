@@ -31,6 +31,11 @@ import GenreDetail from "./pages/genre/GenreDetail";
 import Profile from "./pages/user/Profile"
 import Setting from "./pages/user/Setting";
 
+// Cart
+import Cart from "./pages/cart/Cart";
+
+
+
 
 function Logout() {
   localStorage.clear();
@@ -75,8 +80,9 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/setting" element={<Setting />} />
 
-
-
+          {/* Cart */}
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>}/>
+          
 
           <Route path="*" element={<NotFound />} />
         </Routes>

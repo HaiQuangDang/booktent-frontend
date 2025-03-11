@@ -3,16 +3,19 @@ import { useParams } from "react-router-dom";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { ACCESS_TOKEN } from "../../constants";
 
 function BookDetail() {
     const { id } = useParams();
     const [book, setBook] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
+    const [inCart, setInCart] = useState(false);
 
     useEffect(() => {
         fetchBook();
-    }, []);
+        checkIfInCart();
+    }, [id]);
 
     // fetch store's book
     const fetchBook = async () => {
@@ -24,6 +27,37 @@ function BookDetail() {
             setErrorMessage(error.response?.data?.detail || "Failed to fetch book.")
         }
     }
+    // check if in cart
+    const checkIfInCart = async () => {
+        if (localStorage.getItem(ACCESS_TOKEN)) {
+            try {
+                const res = await api.get(`/cart/check/${id}/`);
+                setInCart(res.data.exists);
+            } catch (error) {
+                console.error("Error checking cart status:", error);
+            }
+        }
+    };
+
+
+    // add to cart
+    const handleAddToCart = async (bookId) => {
+        try {
+            if (!localStorage.getItem(ACCESS_TOKEN)) {
+                alert("My lovely friend, please login to add this item to cart.")
+                navigate("/login")
+            }
+            else {
+                const res = await api.post("/cart/", { book_id: bookId, quantity: 1 });
+                alert("Book added to cart!");
+                checkIfInCart();
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            alert("Failed to add book to cart.");
+        }
+    };
+
     return (
         <div className="container mx-auto p-4">
             {book && (
@@ -68,7 +102,23 @@ function BookDetail() {
                             {book.store_name}
                         </Link>
                     </p>
+                    {inCart ? (
+                        <Link to="/cart">
+                            <button className="bg-gray-500 text-white px-4 py-2 rounded">
+                                In Cart
+                            </button>
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={() => handleAddToCart(book.id)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Add to Cart
+                        </button>
+                    )}
+
                 </div>
+
             )}
 
             {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
