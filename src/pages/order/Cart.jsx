@@ -75,17 +75,20 @@ const Cart = ({ updateCartItemCount }) => {
 
     // Place order
     const handlePlaceOrder = async () => {
-        try {
-            const payload = { cart_item_ids: selectedItems };
-            const res = await api.post("/orders/create/", payload);
-            console.log("Order placed:", res.data);
-            setSelectedItems([]);
-            updateCartItemCount();
-            navigate("/orders/")
+        // try {
+        //     const payload = { cart_item_ids: selectedItems };
+        //     const res = await api.post("/orders/create/", payload);
+        //     console.log("Order placed:", res.data);
+        //     setSelectedItems([]);
+        //     updateCartItemCount();
+        //     navigate("/orders/")
 
-        } catch (error) {
-            console.error("Error placing order:", error);
-        }
+        // } catch (error) {
+        //     console.error("Error placing order:", error);
+        // }
+        console.log("cart_item_ids: ", selectedItems)
+        if (selectedItems.length === 0) return;
+        navigate("/preorder", { state: { selectedItems } });
     };
 
     if (loading) return <p>Loading cart...</p>;

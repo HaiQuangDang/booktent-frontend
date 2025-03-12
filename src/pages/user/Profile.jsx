@@ -21,7 +21,7 @@ const Profile = () => {
                 <img
                     src={user.profile?.avatar}
                     alt="Avatar"
-                    className="w-24 h-24 rounded-full mb-4 border-2 border-gray-300"
+                    className="w-24 h-24 rounded-full mb-4 border-2 border-gray-300 object-cover"
                 />
                 <div className="text-center">
                     <p className="text-lg font-semibold text-gray-700"><strong>Username:</strong> {user.username}</p>

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
 
 const OrderDetail = () => {
   const { id } = useParams(); 
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -20,6 +22,20 @@ const OrderDetail = () => {
     };
     fetchOrder();
   }, [id]);
+
+  const handleCancelOrder = async () => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+
+    setCanceling(true);
+    try {
+      await api.post(`/orders/cancel/${id}/`);
+      setOrder((prevOrder) => ({ ...prevOrder, status: "Cancelled" }));
+    } catch (error) {
+      console.error("Failed to cancel order", error);
+    } finally {
+      setCanceling(false);
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (!order) return <p>Order not found.</p>;
@@ -41,6 +57,17 @@ const OrderDetail = () => {
           </li>
         ))}
       </ul>
+
+      {/* Cancel Order Button - Only if status is Pending */}
+      {order.status === "pending" && (
+        <button
+          onClick={handleCancelOrder}
+          disabled={canceling}
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-400"
+        >
+          {canceling ? "Cancelling..." : "Cancel Order"}
+        </button>
+      )}
     </div>
   );
 };

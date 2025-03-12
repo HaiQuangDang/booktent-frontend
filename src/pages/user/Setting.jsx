@@ -26,7 +26,7 @@ const Setting = () => {
             try {
                 const userRes = await api.get("/user/me/");
                 setUser(userRes.data);
-                setPreview(userRes.data.profile.avatar || ""); // Set initial avatar preview
+                setPreview(userRes.data.profile.avatar || "");
             } catch (error) {
                 console.error("Error fetching user:", error);
             } finally {
@@ -103,6 +103,8 @@ const Setting = () => {
 
     if (loading) return <p>Loading...</p>;
 
+    console.log("User: ", user)
+
     return (
         <div className="p-4 max-w-md mx-auto">
             <h2 className="text-xl font-bold mb-4">Account Settings</h2>
@@ -110,9 +112,10 @@ const Setting = () => {
             {/* Avatar Upload & Preview */}
             <div className="flex flex-col items-center mb-4">
                 <img
-                    src={preview || "/default-avatar.jpg"}
+                    src={preview || "/defaultuser.jpg"}
                     alt="Profile Avatar"
                     className="w-24 h-24 rounded-full object-cover mb-2 border"
+                    style={{ width: "96px", height: "96px", objectFit: "cover", borderRadius: "50%" }}
                 />
                 <input type="file" accept="image/*" onChange={handleFileChange} />
             </div>
@@ -139,7 +142,7 @@ const Setting = () => {
                 {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
                 <textarea
                     name="address"
-                    value={user.profile.address || ""}
+                    value={user.profile.address}
                     onChange={handleChange}
                     placeholder="Address"
                     className="w-full p-2 border rounded"
@@ -147,9 +150,8 @@ const Setting = () => {
                 <button
                     type="submit"
                     className="w-full bg-blue-500 text-white p-2 rounded"
-                   
                 >
-                   Update Profile
+                    Update Profile
                 </button>
             </form>
         </div>

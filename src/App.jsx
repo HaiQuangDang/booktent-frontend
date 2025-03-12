@@ -15,6 +15,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import CreateStore from "./pages/stores/CreateStore";
 import StoreDetails from "./pages/stores/StoreDetails";
 import EditStorePage from "./pages/stores/EditStorePage";
+import StoreOrders from "./pages/stores/StoreOrders";
 
 // Books
 // import BookManager from "./pages/books/BookManager";
@@ -35,6 +36,8 @@ import Setting from "./pages/user/Setting";
 // Order
 import Cart from "./pages/order/Cart";
 import OrderPage from "./pages/order/OrderPage";
+import OrderDetail from "./pages/order/OrderDetail";
+import PreOrder from "./pages/order/PreOrder";
 
 // Layout
 import Header from "./components/layouts/Header";
@@ -103,8 +106,9 @@ function App() {
           {/* Stores */}
           <Route path="/store/create" element={<CreateStore />} />
           <Route path="/store/:id" element={<StoreDetails />} />
-          <Route path="/store/:id/edit" element={<EditStorePage />}
-          />
+          <Route path="/store/:id/edit" element={<EditStorePage />}/>
+          <Route path="/store/orders" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>}/>
+        
 
           {/* Books */}
           <Route path="/books/:id" element={<BookDetail updateCartItemCount={updateCartItemCount} />} />
@@ -124,7 +128,9 @@ function App() {
           {/* Order */}
           <Route path="/cart" element={<ProtectedRoute><Cart updateCartItemCount={updateCartItemCount} /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
-
+          <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+          <Route path="/preorder/" element={<ProtectedRoute><PreOrder /></ProtectedRoute>} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
