@@ -12,7 +12,7 @@ const OrderDetail = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await api.get(`/orders/list/${id}/`);
+        const response = await api.get(`/orders/retrieve/${id}/`);
         setOrder(response.data);
       } catch (error) {
         console.error("Failed to fetch order", error);
@@ -43,7 +43,7 @@ const OrderDetail = () => {
   return (
     <div className="p-6 max-w-2xl mx-auto bg-white shadow-lg rounded-lg">
       <h2 className="text-xl font-semibold mb-4">Order #{order.id}</h2>
-      <p>Status: <span className="font-medium">{order.status}</span></p>
+      <p>Status: <span className="font-medium">{order.order_status}</span></p>
       <p>Total Price: <span className="font-medium">${order.total_price}</span></p>
       <p>Payment Method: <span className="font-medium">{order.payment_method}</span></p>
       <p>Payment Status: <span className="font-medium">{order.payment_status}</span></p>

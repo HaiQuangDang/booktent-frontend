@@ -38,6 +38,7 @@ import Cart from "./pages/order/Cart";
 import OrderPage from "./pages/order/OrderPage";
 import OrderDetail from "./pages/order/OrderDetail";
 import PreOrder from "./pages/order/PreOrder";
+import OrderSuccess from "./pages/order/OrderSuccess";
 
 // Layout
 import Header from "./components/layouts/Header";
@@ -137,6 +138,7 @@ function App() {
           <Route path="/orders" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
           <Route path="/preorder/" element={<ProtectedRoute><PreOrder /></ProtectedRoute>} />
+          <Route path="/orders/success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

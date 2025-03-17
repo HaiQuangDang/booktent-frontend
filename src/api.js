@@ -55,3 +55,13 @@ api.interceptors.response.use(
 
 
 export default api;
+
+export const createStripeCheckoutSession = async (orderId) => {
+  try {
+    const response = await api.post("/orders/stripe/create-checkout-session/", { order_id: orderId });
+    return response.data.url; // Return the Stripe Checkout URL
+  } catch (error) {
+    console.error("Error creating checkout session:", error.response?.data || error.message);
+    return null;
+  }
+};

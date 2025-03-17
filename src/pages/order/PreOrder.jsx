@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import api from "../../api";
-import { FaPaypal, FaMoneyBillWave } from "react-icons/fa";
+import api, { createStripeCheckoutSession } from "../../api";
 import paypalLogo from "../../assets/paypal.svg"
+import stripeLogo from "../../assets/stripelogo.svg"
 import cashOnDelivery from "../../assets/cash-on-delivery.svg"
 
 
@@ -39,7 +39,19 @@ const PreOrder = () => {
         try {
             const res = await api.post("/orders/create/", payload);
             console.log("Order placed:", res.data);
-            navigate("/orders/");
+            if (paymentMethod === "online") {
+                // Extract the order ID (assuming orders are created successfully)
+                const orderId = res.data[0].id;  
+                const checkoutUrl = await createStripeCheckoutSession(orderId);
+    
+                if (checkoutUrl) {
+                    window.location.href = checkoutUrl; // Redirect to Stripe
+                } else {
+                    console.error("Failed to get Stripe checkout URL");
+                }
+            } else {
+                navigate("/orders/"); // Navigate for COD orders
+            }
         } catch (error) {
             console.error("Error placing order:", error);
         }
@@ -63,9 +75,9 @@ const PreOrder = () => {
 
             <h3 className="text-xl font-bold mt-6 text-gray-800">Choose Payment Method</h3>
             <div className="grid grid-cols-2 gap-4 mt-4">
-                <button onClick={() => setPaymentMethod("paypal")} className={`p-4 border rounded-lg flex items-center space-x-2 ${paymentMethod === "paypal" ? "border-blue-500" : "border-gray-300"}`}>
-                    <img src={paypalLogo} alt="PayPal" className="w-22" />
-                    <span>PayPal</span>
+                <button onClick={() => setPaymentMethod("online")} className={`p-4 border rounded-lg flex items-center space-x-2 ${paymentMethod === "online" ? "border-blue-500" : "border-gray-300"}`}>
+                    <img src={stripeLogo} alt="Stripe" className="w-22" />
+                    <span>Stripe</span>
                 </button>
                 <button onClick={() => setPaymentMethod("cod")} className={`p-4 border rounded-lg flex items-center space-x-2 ${paymentMethod === "cod" ? "border-green-500" : "border-gray-300"}`}>
                     <img src={cashOnDelivery} alt="Cash on Delivery" className="w-10" />
