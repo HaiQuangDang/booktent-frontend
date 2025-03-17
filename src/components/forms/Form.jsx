@@ -50,8 +50,11 @@ function Form({ route, method }) {
                 const userRes = await api.get("/user/me/");
                 localStorage.setItem(USER, JSON.stringify(userRes.data));
                 navigate("/");
+                window.location.reload()
             } else {
                 navigate("/login");
+                window.location.reload()
+
             }
         } catch (error) {
             console.log(error)

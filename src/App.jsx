@@ -42,43 +42,50 @@ import PreOrder from "./pages/order/PreOrder";
 // Layout
 import Header from "./components/layouts/Header";
 
-function Logout() {
-  localStorage.clear();
-  return <Navigate to="/" />;
-}
 
-function RegisterAndLogout() {
-  localStorage.clear();
-  return <Register />;
-}
 
-const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN);
 
 function App() {
   const [user, setUser] = useState(null);
   const [myStore, setMystore] = useState(null);
   const [cartItemCount, setCartItemCount] = useState(0);
 
+  const fetchData = async () => {
+    if (localStorage.getItem(USER)) {
+      const storedUser = localStorage.getItem(USER);
+      setUser(JSON.parse(storedUser));
+      try {
+        const myStoreRes = await api.get("/stores/mine/");
+        if (myStoreRes.data && !myStoreRes.data.detail) {
+          setMystore(myStoreRes.data);
+        }
+        // fetch amount of cart items
+        const cartRes = await api.get("/cart/");
+        setCartItemCount(cartRes.data.items.length);
+      } catch (error) {
+        console.error("Failed to load data.", error);
+      }
+    }
+  };
+
+  function Logout() {
+    localStorage.clear();
+    setUser(null);
+    setMystore(null);
+    return <Navigate to="/" />;
+  }
+
+  function RegisterAndLogout() {
+    localStorage.clear();
+    setUser(null);
+    setMystore(null);
+    return <Register />;
+  }
+
+  const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN);
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (localStorage.getItem(USER)) {
-        const storedUser = localStorage.getItem(USER);
-        setUser(JSON.parse(storedUser));
-        try {
-          const myStoreRes = await api.get("/stores/mine/");
-          if (myStoreRes.data && !myStoreRes.data.detail) {
-            setMystore(myStoreRes.data);
-          }
-          // fetch amount of cart items
-          const cartRes = await api.get("/cart/");
-          setCartItemCount(cartRes.data.items.length);
-        } catch (error) {
-          console.error("Failed to load data.", error);
-        }
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -106,9 +113,9 @@ function App() {
           {/* Stores */}
           <Route path="/store/create" element={<CreateStore />} />
           <Route path="/store/:id" element={<StoreDetails />} />
-          <Route path="/store/:id/edit" element={<EditStorePage />}/>
-          <Route path="/store/orders" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>}/>
-        
+          <Route path="/store/:id/edit" element={<EditStorePage />} />
+          <Route path="/store/orders" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>} />
+
 
           {/* Books */}
           <Route path="/books/:id" element={<BookDetail updateCartItemCount={updateCartItemCount} />} />
@@ -130,7 +137,7 @@ function App() {
           <Route path="/orders" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
           <Route path="/preorder/" element={<ProtectedRoute><PreOrder /></ProtectedRoute>} />
-          
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

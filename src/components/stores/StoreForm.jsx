@@ -20,6 +20,7 @@ function StoreForm() {
             const storeId = res.data.id;
             alert("Store created successfully!");
             navigate(`/store/${storeId}`); // Redirect to store details
+            window.location.reload()
         } catch (error) {
             if (error.response.data.name) {
                 setErrorStoreName(error.response.data.name[0]);

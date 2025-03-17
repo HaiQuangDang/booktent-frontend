@@ -36,7 +36,7 @@ export default function Header({ user, myStore, cartItemCount }) {
             </Link>
           ) : (
             <Link to="/store/create" className="text-blue-500 hover:text-blue-700">
-              Create Store
+              Create Store?
             </Link>
           )}
         </div>

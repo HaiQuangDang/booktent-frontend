@@ -36,6 +36,7 @@ const BookOwn = ({ books, isOwner }) => {
                 <h2 className="text-lg font-semibold">{book.title}</h2>
                 <p className="text-gray-600">Price: ${book.price}</p>
                 <p className="text-gray-500 text-sm">Stock: {book.stock_quantity}</p>
+                <p className="text-blue-600">Status: {book.status}</p>
               </div>
             </Link>
             {isOwner && (
