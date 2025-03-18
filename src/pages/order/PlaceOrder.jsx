@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api, { createStripeCheckoutSession } from "../../api";
-import paypalLogo from "../../assets/paypal.svg"
+// import paypalLogo from "../../assets/paypal.svg"
 import stripeLogo from "../../assets/stripelogo.svg"
 import cashOnDelivery from "../../assets/cash-on-delivery.svg"
 
@@ -50,7 +50,7 @@ const PreOrder = () => {
                     console.error("Failed to get Stripe checkout URL");
                 }
             } else {
-                navigate("/orders/"); // Navigate for COD orders
+                navigate("/orders/list"); // Navigate for COD orders
             }
         } catch (error) {
             console.error("Error placing order:", error);

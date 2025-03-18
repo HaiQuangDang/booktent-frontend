@@ -34,9 +34,10 @@ const OrderPage = () => {
             <thead>
               <tr className="bg-gray-200 text-left">
                 <th className="p-3">Order ID</th>
-                <th className="p-3">Total Price</th>
                 <th className="p-3">Date</th>
                 <th className="p-3">Status</th>
+                <th className="p-3">Total Price</th>
+                <th className="p-3">Payment Status</th>
                 <th className="p-3">Actions</th>
               </tr>
             </thead>
@@ -44,9 +45,10 @@ const OrderPage = () => {
               {orders.map((order) => (
                 <tr key={order.id} className="border-b">
                   <td className="p-3">{order.id}</td>
-                  <td className="p-3">${parseFloat(order.total_price).toFixed(2)}</td>
                   <td className="p-3">{new Date(order.created_at).toLocaleDateString()}</td>
-                  <td className="p-3">{order.status}</td>
+                  <td className="p-3">{order.order_status}</td>
+                  <td className="p-3">${parseFloat(order.total_price).toFixed(2)}</td>
+                  <td className="p-3">{order.payment_status}</td>
                   <td className="p-3">
                     <Link
                       to={`/orders/${order.id}`}

@@ -35,9 +35,9 @@ import Setting from "./pages/user/Setting";
 
 // Order
 import Cart from "./pages/order/Cart";
-import OrderPage from "./pages/order/OrderPage";
+import OrderListPage from "./pages/order/OrderListPage";
 import OrderDetail from "./pages/order/OrderDetail";
-import PreOrder from "./pages/order/PreOrder";
+import PlaceOrder from "./pages/order/PlaceOrder";
 import OrderSuccess from "./pages/order/OrderSuccess";
 
 // Layout
@@ -113,9 +113,9 @@ function App() {
 
           {/* Stores */}
           <Route path="/store/create" element={<CreateStore />} />
+          <Route path="/store/orders-list" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>} />
           <Route path="/store/:id" element={<StoreDetails />} />
           <Route path="/store/:id/edit" element={<EditStorePage />} />
-          <Route path="/store/orders" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>} />
 
 
           {/* Books */}
@@ -135,9 +135,9 @@ function App() {
 
           {/* Order */}
           <Route path="/cart" element={<ProtectedRoute><Cart updateCartItemCount={updateCartItemCount} /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
+          <Route path="/orders/list" element={<ProtectedRoute><OrderListPage /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
-          <Route path="/preorder/" element={<ProtectedRoute><PreOrder /></ProtectedRoute>} />
+          <Route path="/place-order/" element={<ProtectedRoute><PlaceOrder /></ProtectedRoute>} />
           <Route path="/orders/success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />

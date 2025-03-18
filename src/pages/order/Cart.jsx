@@ -88,7 +88,7 @@ const Cart = ({ updateCartItemCount }) => {
         // }
         console.log("cart_item_ids: ", selectedItems)
         if (selectedItems.length === 0) return;
-        navigate("/preorder", { state: { selectedItems } });
+        navigate("/place-order", { state: { selectedItems } });
     };
 
     if (loading) return <p>Loading cart...</p>;
