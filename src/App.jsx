@@ -16,6 +16,7 @@ import CreateStore from "./pages/stores/CreateStore";
 import StoreDetails from "./pages/stores/StoreDetails";
 import EditStorePage from "./pages/stores/EditStorePage";
 import StoreOrders from "./pages/stores/StoreOrders";
+import StoreOrderDetail from "./pages/stores/StoreOrderDetail";
 
 // Books
 // import BookManager from "./pages/books/BookManager";
@@ -116,6 +117,7 @@ function App() {
           <Route path="/store/orders-list" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>} />
           <Route path="/store/:id" element={<StoreDetails />} />
           <Route path="/store/:id/edit" element={<EditStorePage />} />
+          <Route path="/store/orders/:orderId" element={<ProtectedRoute><StoreOrderDetail /></ProtectedRoute>} />
 
 
           {/* Books */}
