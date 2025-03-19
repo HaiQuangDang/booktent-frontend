@@ -1,12 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api, { createStripeCheckoutSession } from "../../api";
-// import paypalLogo from "../../assets/paypal.svg"
-import stripeLogo from "../../assets/stripelogo.svg"
-import cashOnDelivery from "../../assets/cash-on-delivery.svg"
+import stripeLogo from "../../assets/stripelogo.svg";
+import cashOnDelivery from "../../assets/cash-on-delivery.svg";
 
-
-const PreOrder = () => {
+const PlaceOrder = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { selectedItems } = location.state || { selectedItems: [] };
@@ -38,12 +36,14 @@ const PreOrder = () => {
 
         try {
             const res = await api.post("/orders/create/", payload);
-            console.log("Order placed:", res.data);
+            console.log("Orders placed:", res.data);
+
+            // Extract all order IDs
+            const orderIds = res.data.map(order => order.id);
+            
             if (paymentMethod === "online") {
-                // Extract the order ID (assuming orders are created successfully)
-                const orderId = res.data[0].id;  
-                const checkoutUrl = await createStripeCheckoutSession(orderId);
-    
+                const checkoutUrl = await createStripeCheckoutSession(orderIds);
+
                 if (checkoutUrl) {
                     window.location.href = checkoutUrl; // Redirect to Stripe
                 } else {
@@ -95,4 +95,4 @@ const PreOrder = () => {
     );
 };
 
-export default PreOrder;
+export default PlaceOrder;

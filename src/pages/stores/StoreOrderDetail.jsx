@@ -61,7 +61,13 @@ const StoreOrderDetail = () => {
             <p><strong>Status:</strong> {order.order_status}</p>
             <p><strong>Total:</strong> ${order.total_price}</p>
             <p><strong>Payment:</strong> {order.payment_method} - {order.payment_status}</p>
-
+            <ul className="mt-2">
+                {order.items.map(item => (
+                    <li key={item.id} className="border p-2 rounded my-2">
+                        {item.quantity}x <span className="font-medium">{item.book_title}</span> - ${item.price}
+                    </li>
+                ))}
+            </ul>
             <div className="mt-4">
                 <label className="block font-semibold">Update Status:</label>
                 <select
