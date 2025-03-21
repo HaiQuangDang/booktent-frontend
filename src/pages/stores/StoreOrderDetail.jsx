@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import api from "../../api";
 
 const ALLOWED_TRANSITIONS = {
-    pending: ["processing", "canceled"],
-    processing: ["shipped", "canceled"],
+    pending: ["processing"],
+    processing: ["shipped"],
     shipped: ["completed", "refunded"],
     completed: [],
     canceled: [],
@@ -17,20 +17,21 @@ const StoreOrderDetail = () => {
     const [newStatus, setNewStatus] = useState("");
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
+    const [canceling, setCanceling] = useState(false);
+
+    const fetchOrderDetail = async () => {
+        try {
+            const response = await api.get(`/orders/my-store/${orderId}/`);
+            setOrder(response.data);
+            setNewStatus(response.data.order_status); // Default to current status
+        } catch (error) {
+            console.error("Error fetching order:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchOrderDetail = async () => {
-            try {
-                const response = await api.get(`/orders/my-store/${orderId}/`);
-                setOrder(response.data);
-                setNewStatus(response.data.order_status); // Default to current status
-            } catch (error) {
-                console.error("Error fetching order:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchOrderDetail();
     }, [orderId]);
 
@@ -52,6 +53,21 @@ const StoreOrderDetail = () => {
         }
     };
 
+    const handleCancelOrder = async () => {
+        if (!order) return;
+        const confirmCancel = window.confirm("Are you sure you want to cancel this order?");
+        if (!confirmCancel) return;
+
+        setCanceling(true);
+        try {
+            await api.post(`/orders/cancel/${orderId}/`);
+        } catch (error) {
+            console.error("Error canceling order:", error);
+        } finally {
+          fetchOrderDetail();
+        }
+    };
+
     if (loading) return <p>Loading...</p>;
     if (!order) return <p>Order not found.</p>;
 
@@ -68,26 +84,41 @@ const StoreOrderDetail = () => {
                     </li>
                 ))}
             </ul>
-            <div className="mt-4">
-                <label className="block font-semibold">Update Status:</label>
-                <select
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
-                    className="border p-2 rounded-lg w-full"
-                >
-                    <option value={order.order_status}>{order.order_status}</option>
-                    {ALLOWED_TRANSITIONS[order.order_status].map((status) => (
-                        <option key={status} value={status}>{status}</option>
-                    ))}
-                </select>
+            
+            {/* Status Update Section */}
+            {order.order_status !== "canceled" && order.order_status !== "refunded" && (
+                <div className="mt-4">
+                    <label className="block font-semibold">Update Status:</label>
+                    <select
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value)}
+                        className="border p-2 rounded-lg w-full"
+                    >
+                        <option value={order.order_status}>{order.order_status}</option>
+                        {ALLOWED_TRANSITIONS[order.order_status].map((status) => (
+                            <option key={status} value={status}>{status}</option>
+                        ))}
+                    </select>
+                    <button
+                        onClick={handleUpdateStatus}
+                        disabled={updating}
+                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
+                    >
+                        {updating ? "Updating..." : "Update Status"}
+                    </button>
+                </div>
+            )}
+
+            {/* Cancel Order Button */}
+            {order.order_status !== "canceled" && order.order_status !== "refunded" && (
                 <button
-                    onClick={handleUpdateStatus}
-                    disabled={updating}
-                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
+                    onClick={handleCancelOrder}
+                    disabled={canceling}
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
                 >
-                    {updating ? "Updating..." : "Update Status"}
+                    {canceling ? "Canceling..." : "Cancel Order"}
                 </button>
-            </div>
+            )}
         </div>
     );
 };

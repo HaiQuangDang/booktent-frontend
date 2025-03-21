@@ -9,23 +9,23 @@ const OrderDetail = () => {
   const [loading, setLoading] = useState(true);
   const [canceling, setCanceling] = useState(false);
 
+  const fetchOrder = async () => {
+    try {
+      const response = await api.get(`/orders/retrieve/${id}/`);
+      setOrder(response.data);
+    } catch (error) {
+      console.error("Failed to fetch order", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const response = await api.get(`/orders/retrieve/${id}/`);
-        setOrder(response.data);
-      } catch (error) {
-        console.error("Failed to fetch order", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrder();
   }, [id]);
 
   const handleCancelOrder = async () => {
     if (!window.confirm("Are you sure you want to cancel this order?")) return;
-
     setCanceling(true);
     try {
       await api.post(`/orders/cancel/${id}/`);
@@ -33,6 +33,7 @@ const OrderDetail = () => {
     } catch (error) {
       console.error("Failed to cancel order", error);
     } finally {
+      fetchOrder();
       setCanceling(false);
     }
   };
@@ -59,7 +60,7 @@ const OrderDetail = () => {
       </ul>
 
       {/* Cancel Order Button - Only if status is Pending */}
-      {order.status === "pending" && (
+      {order.order_status === "pending" && (
         <button
           onClick={handleCancelOrder}
           disabled={canceling}

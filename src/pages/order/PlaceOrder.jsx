@@ -4,7 +4,7 @@ import api, { createStripeCheckoutSession } from "../../api";
 import stripeLogo from "../../assets/stripelogo.svg";
 import cashOnDelivery from "../../assets/cash-on-delivery.svg";
 
-const PlaceOrder = () => {
+const PlaceOrder = ({ updateCartItemCount }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { selectedItems } = location.state || { selectedItems: [] };
@@ -36,7 +36,7 @@ const PlaceOrder = () => {
 
         try {
             const res = await api.post("/orders/create/", payload);
-            console.log("Orders placed:", res.data);
+            updateCartItemCount();
 
             // Extract all order IDs
             const orderIds = res.data.map(order => order.id);

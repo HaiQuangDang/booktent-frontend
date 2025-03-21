@@ -139,7 +139,7 @@ function App() {
           <Route path="/cart" element={<ProtectedRoute><Cart updateCartItemCount={updateCartItemCount} /></ProtectedRoute>} />
           <Route path="/orders/list" element={<ProtectedRoute><OrderListPage /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
-          <Route path="/place-order/" element={<ProtectedRoute><PlaceOrder /></ProtectedRoute>} />
+          <Route path="/place-order/" element={<ProtectedRoute><PlaceOrder updateCartItemCount={updateCartItemCount} /></ProtectedRoute>} />
           <Route path="/orders/success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />
