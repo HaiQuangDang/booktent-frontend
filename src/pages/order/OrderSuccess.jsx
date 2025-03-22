@@ -21,11 +21,13 @@ const OrderSuccess = () => {
                 // Verify session with backend
                 const res = await api.post("/orders/payment-success/", { session_id: sessionId });
                 setMessage("Payment successful! Redirecting to your orders...");
-                setTimeout(() => navigate("/orders/list"), 3000);
+                // setTimeout(() => navigate("/orders/list"), 3000);
+                console.log(res.response)
             } catch (error) {
                 console.error("Payment verification failed:", error);
                 setMessage("Payment verification failed.");
             } finally {
+                
                 setLoading(false);
             }
         };

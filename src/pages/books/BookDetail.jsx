@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ACCESS_TOKEN } from "../../constants";
 
-function BookDetail({updateCartItemCount}) {
+function BookDetail({ updateCartItemCount }) {
     const { id } = useParams();
     const [book, setBook] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -103,19 +103,21 @@ function BookDetail({updateCartItemCount}) {
                             {book.store_name}
                         </Link>
                     </p>
-                    {inCart ? (
-                        <Link to="/cart">
-                            <button className="bg-blue-500 text-white px-4 py-2 rounded">
-                                In Cart
+                    {book.stock_quantity > 0 && (
+                        inCart ? (
+                            <Link to="/cart">
+                                <button className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    In Cart
+                                </button>
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={() => handleAddToCart(book.id)}
+                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                            >
+                                Add to Cart
                             </button>
-                        </Link>
-                    ) : (
-                        <button
-                            onClick={() => handleAddToCart(book.id)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                            Add to Cart
-                        </button>
+                        )
                     )}
 
                 </div>

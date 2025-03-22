@@ -53,7 +53,8 @@ const PlaceOrder = ({ updateCartItemCount }) => {
                 navigate("/orders/list"); // Navigate for COD orders
             }
         } catch (error) {
-            console.error("Error placing order:", error);
+            alert(error.response.data.error);
+            console.error("Error placing order:", error.response.data.error);
         }
     };
 
