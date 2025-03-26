@@ -12,7 +12,7 @@ function AdminStoreManagement() {
 
     const fetchStores = async () => {
         try {
-            const res = await api.get("/store/");
+            const res = await api.get("/stores/");
             setStores(res.data);
         } catch (error) {
             console.error("Error fetching stores:", error);
@@ -24,7 +24,7 @@ function AdminStoreManagement() {
     const handleDeleteStore = async (id) => {
         if (window.confirm("Are you sure you want to delete this store?")) {
             try {
-                await api.delete(`/store/${id}/`);
+                await api.delete(`/stores/${id}/`);
                 setStores(stores.filter(store => store.id !== id));
             } catch (error) {
                 console.error("Error deleting store:", error);
@@ -34,7 +34,7 @@ function AdminStoreManagement() {
 
     const handleUpdateStatus = async (id, newStatus) => {
         try {
-            await api.patch(`/store/${id}/`, { status: newStatus });
+            await api.patch(`/stores/${id}/`, { status: newStatus });
             setStores(stores.map(store => store.id === id ? { ...store, status: newStatus } : store));
         } catch (error) {
             console.error("Error updating store status:", error);

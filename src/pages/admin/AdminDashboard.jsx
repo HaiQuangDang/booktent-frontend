@@ -5,9 +5,7 @@ import AdminStoreManagement from "../../components/admin/AdminStoreManagement"
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
+   
 
     const fetchUsers = async () => {
         try {
@@ -17,7 +15,9 @@ const AdminDashboard = () => {
             console.error("Error fetching users:", error);
         }
     };
-
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;

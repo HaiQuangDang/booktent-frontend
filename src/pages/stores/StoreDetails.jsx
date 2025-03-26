@@ -5,6 +5,7 @@ import { USER } from "../../constants";
 import BookOwn from "../../components/stores/BookOwn";
 import { Link } from "react-router-dom";
 
+// This is for customer view
 
 function StoreDetails() {
     const { id } = useParams();
@@ -37,7 +38,7 @@ function StoreDetails() {
 
     }, [id]);
 
-    // my version
+  
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete your store?")) return;
 
@@ -47,11 +48,6 @@ function StoreDetails() {
             navigate("/");
             window.location.reload()
         } catch (error) {
-            // if (error.response && error.response.data) {
-            //     alert(error.response.data.detail); // Show error message from backend
-            // } else {
-            //     alert("An error occurred while deleting the user.");
-            // }
             console.error("Error deleting user:", error);
         }
     };

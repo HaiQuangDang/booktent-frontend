@@ -17,6 +17,7 @@ import StoreDetails from "./pages/stores/StoreDetails";
 import EditStorePage from "./pages/stores/EditStorePage";
 import StoreOrders from "./pages/stores/StoreOrders";
 import StoreOrderDetail from "./pages/stores/StoreOrderDetail";
+import StoreDashboard from "./pages/stores/StoreDashboard";
 
 // Books
 // import BookManager from "./pages/books/BookManager";
@@ -44,7 +45,9 @@ import OrderSuccess from "./pages/order/OrderSuccess";
 // Layout
 import Header from "./components/layouts/Header";
 
-
+// Admin
+import AdminRoute from "./components/admin/AdminRoute"
+import AdminDashboard from "./pages/admin/AdminDashboard"
 
 
 function App() {
@@ -106,15 +109,19 @@ function App() {
         <Header user={user} myStore={myStore} cartItemCount={cartItemCount} />
         <Routes>
 
-
           <Route path="/" element={<Home />} />
           <Route path="/login" element={isAuthenticated() ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={isAuthenticated() ? <Navigate to="/" /> : <RegisterAndLogout />} />
           <Route path="/logout" element={<Logout />} />
 
+          {/* Admin */}
+
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          
           {/* Stores */}
+          <Route path="/dashboard" element={<ProtectedRoute><StoreDashboard /></ProtectedRoute>} />
           <Route path="/store/create" element={<CreateStore />} />
-          <Route path="/store/orders-list" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>} />
+          <Route path="/store/orders" element={<ProtectedRoute><StoreOrders /></ProtectedRoute>} />
           <Route path="/store/:id" element={<StoreDetails />} />
           <Route path="/store/:id/edit" element={<EditStorePage />} />
           <Route path="/store/orders/:orderId" element={<ProtectedRoute><StoreOrderDetail /></ProtectedRoute>} />

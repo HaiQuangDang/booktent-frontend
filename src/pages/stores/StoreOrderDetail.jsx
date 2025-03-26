@@ -45,7 +45,8 @@ const StoreOrderDetail = () => {
         setUpdating(true);
         try {
             await api.patch(`/orders/update-status/${orderId}/`, { order_status: newStatus });
-            setOrder({ ...order, order_status: newStatus });
+            // setOrder({ ...order, order_status: newStatus });
+            fetchOrderDetail();
         } catch (error) {
             console.error("Error updating order status:", error);
         } finally {
@@ -60,7 +61,8 @@ const StoreOrderDetail = () => {
 
         setCanceling(true);
         try {
-            await api.post(`/orders/cancel/${orderId}/`);
+            const res = await api.post(`/orders/cancel/${orderId}/`);
+            console.log(res.data.message)
         } catch (error) {
             console.error("Error canceling order:", error);
         } finally {
@@ -86,7 +88,7 @@ const StoreOrderDetail = () => {
             </ul>
             
             {/* Status Update Section */}
-            {order.order_status !== "canceled" && order.order_status !== "refunded" && (
+            {order.order_status !== "completed" && order.order_status !== "canceled" && order.order_status !== "refunded" && (
                 <div className="mt-4">
                     <label className="block font-semibold">Update Status:</label>
                     <select
@@ -110,7 +112,7 @@ const StoreOrderDetail = () => {
             )}
 
             {/* Cancel Order Button */}
-            {order.order_status !== "canceled" && order.order_status !== "refunded" && (
+            {(order.order_status === "pending" || order.order_status === "processing") && (
                 <button
                     onClick={handleCancelOrder}
                     disabled={canceling}

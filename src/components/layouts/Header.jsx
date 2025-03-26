@@ -31,7 +31,7 @@ export default function Header({ user, myStore, cartItemCount }) {
       <div className="flex items-center gap-6">
         <div className="font-medium flex gap-4">
           {myStore ? (
-            <Link to={`/store/${myStore.id}`} className="text-blue-500 hover:text-blue-700">
+            <Link to={`/dashboard`} className="text-blue-500 hover:text-blue-700">
               My Store
             </Link>
           ) : (
