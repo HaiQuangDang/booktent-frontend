@@ -48,6 +48,8 @@ import Header from "./components/layouts/Header";
 // Admin
 import AdminRoute from "./components/admin/AdminRoute"
 import AdminDashboard from "./pages/admin/AdminDashboard"
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminStores from "./pages/admin/AdminStores";
 
 
 function App() {
@@ -117,7 +119,8 @@ function App() {
           {/* Admin */}
 
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          
+          <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+          <Route path="/admin/stores" element={<AdminRoute><AdminStores /></AdminRoute>} />
           {/* Stores */}
           <Route path="/dashboard" element={<ProtectedRoute><StoreDashboard /></ProtectedRoute>} />
           <Route path="/store/create" element={<CreateStore />} />
