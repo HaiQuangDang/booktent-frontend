@@ -35,6 +35,16 @@ const AdminSidebar = () => {
             💰 Transactions
           </Link>
         </li>
+        <li>
+          <Link to="/admin/authors" className="block px-4 py-2 rounded hover:bg-gray-700">
+            📖 Authors
+          </Link>
+        </li>
+        <li>
+          <Link to="/admin/genres" className="block px-4 py-2 rounded hover:bg-gray-700">
+            🎭 Genres
+          </Link>
+        </li>
       </ul>
     </div>
   );

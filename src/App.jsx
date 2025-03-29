@@ -55,6 +55,8 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminTransactionDetail from "./pages/admin/AdminTransactionDetail";
+import AdminAuthors from "./pages/admin/AdminAuthors";
+import AdminGenres from "./pages/admin/AdminGenres";
 
 
 function App() {
@@ -131,6 +133,8 @@ function App() {
           <Route path="/admin/orders/:id" element={<AdminRoute><AdminOrderDetail /></AdminRoute>} />
           <Route path="/admin/transactions/" element={<AdminRoute><AdminTransactions /></AdminRoute>} />
           <Route path="/admin/transactions/:id" element={<AdminRoute><AdminTransactionDetail /></AdminRoute>} />
+          <Route path="/admin/authors" element={<AdminRoute><AdminAuthors /></AdminRoute>} />
+          <Route path="/admin/genres" element={<AdminRoute><AdminGenres /></AdminRoute>} />
 
           {/* Stores */}
           <Route path="/dashboard" element={<ProtectedRoute><StoreDashboard /></ProtectedRoute>} />

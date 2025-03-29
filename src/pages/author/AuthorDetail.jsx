@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const AuthorDetail = () => {
     const { id } = useParams();
     const [author, setAuthor] = useState(null);
+    const [authorBooks, setAuthorBooks] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -20,8 +21,20 @@ const AuthorDetail = () => {
         }
     };
 
+    const fetchAuthorBooks = async () => {
+        try {
+            const authorRes = await api.get(`/books/authors/${id}/books/`);
+            setAuthorBooks(authorRes.data.books);
+        } catch (err) {
+            setError("Author's Books not found");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchAuthor();
+        fetchAuthorBooks();
     }
     , [id]);
 
@@ -55,8 +68,8 @@ const AuthorDetail = () => {
                 <div>
                     <h3 className="text-2xl font-semibold mb-4">Books</h3>
                     <ul className="list-disc list-inside">
-                        {author.books && author.books.length > 0 ? (
-                            author.books.map((book) => (
+                        {authorBooks && authorBooks.length > 0 ? (
+                            authorBooks.map((book) => (
                                 <li key={book.id} className="mb-2">
                                     <Link to={`/books/${book.id}`} className="text-lg font-medium text-blue-500 hover:underline">
                                         {book.title}

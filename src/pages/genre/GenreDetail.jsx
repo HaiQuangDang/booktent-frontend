@@ -6,6 +6,7 @@ import api from "../../api";
 const GenreDetail = () => {
     const { id } = useParams();
     const [genre, setGenre] = useState(null);
+    const [genreBooks, setGenreBooks] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -20,8 +21,20 @@ const GenreDetail = () => {
         }
     }
 
+    const fetchGenreBooks = async () => {
+        try {
+            const genreRes = await api.get(`/books/genres/${id}/books/`);
+            setGenreBooks(genreRes.data.books);
+        } catch (err) {
+            setError("Genre's Books not found");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchGenre();
+        fetchGenreBooks();
     }, [id]);
 
     if (loading) return <p>Loading genre...</p>;
@@ -34,9 +47,9 @@ const GenreDetail = () => {
                 <p className="text-lg text-gray-700 mb-6">{genre.description}</p>
                 <div>
                     <h3 className="text-2xl font-semibold mb-4">Books</h3>
-                    {genre.books && genre.books.length > 0 ? (
+                    {genreBooks && genreBooks.length > 0 ? (
                         <ul className="space-y-4">
-                            {genre.books.map((book) => (
+                            {genreBooks.map((book) => (
                                 <li key={book.id} className="p-4 bg-gray-100 rounded-lg shadow-sm">
                                     <h4 className="text-xl font-bold">
                                         <Link to={`/books/${book.id}`} className="text-blue-600 hover:underline">
