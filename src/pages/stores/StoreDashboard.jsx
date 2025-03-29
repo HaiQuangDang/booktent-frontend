@@ -98,7 +98,7 @@ const StoreDashboard = () => {
                     <ul className="list-disc ml-5">
                         {dashboardData.recent_transactions.map(transaction => (
                             <li key={transaction.id}>
-                                ${transaction.amount} - {transaction.payment_status}
+                                ${transaction.amount} - {transaction.status}
                             </li>
                         ))}
                     </ul>
