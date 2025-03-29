@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api";
+import AdminSidebar from "../../components/admin/AdminSidebar";
 import LoadingIndicator from "../../components/LoadingIndicator";
 
 function AdminStores() {
@@ -46,57 +47,64 @@ function AdminStores() {
     if (loading) return <LoadingIndicator />;
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Manage Stores</h2>
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 shadow-md rounded-lg">
-                    <thead className="bg-gray-200">
-                        <tr>
-                            <th className="border p-3 text-left">ID</th>
-                            <th className="border p-3 text-left">Name</th>
-                            <th className="border p-3 text-left">Owner</th>
-                            <th className="border p-3 text-left">Status</th>
-                            <th className="border p-3 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {stores.map((store) => (
-                            <tr key={store.id} className="hover:bg-gray-100">
-                                <td className="border p-3">{store.id}</td>
-                                <td className="border p-3">
-                                    <Link
-                                        to={`/store/${store.id}`}
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        {store.name}
-                                    </Link>
-                                </td>
-                                <td className="border p-3">{store.owner}</td>
-                                <td className="border p-3">
-                                    <select
-                                        value={store.status}
-                                        onChange={(e) => handleUpdateStatus(store.id, e.target.value)}
-                                        className="border px-2 py-1 rounded"
-                                    >
-                                        <option value="pending">Pending</option>
-                                        <option value="active">Active</option>
-                                        <option value="suspended">Suspended</option>
-                                    </select>
-                                </td>
-                                <td className="border p-3 text-center">
-                                    <button
-                                        onClick={() => handleDeleteStore(store.id)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
+        <div className="flex">
+            {/* Sidebar */}
+            <AdminSidebar />
+
+            {/* Main Content */}
+            <div className="flex-1 p-6">
+                <h2 className="text-2xl font-bold mb-4">Manage Stores</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse border border-gray-300 shadow-md rounded-lg">
+                        <thead className="bg-gray-200">
+                            <tr>
+                                <th className="border p-3 text-left">ID</th>
+                                <th className="border p-3 text-left">Name</th>
+                                <th className="border p-3 text-left">Owner</th>
+                                <th className="border p-3 text-left">Status</th>
+                                <th className="border p-3 text-center">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {stores.map((store) => (
+                                <tr key={store.id} className="hover:bg-gray-100">
+                                    <td className="border p-3">{store.id}</td>
+                                    <td className="border p-3">
+                                        <Link
+                                            to={`/store/${store.id}`}
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            {store.name}
+                                        </Link>
+                                    </td>
+                                    <td className="border p-3">{store.owner}</td>
+                                    <td className="border p-3">
+                                        <select
+                                            value={store.status}
+                                            onChange={(e) => handleUpdateStatus(store.id, e.target.value)}
+                                            className="border px-2 py-1 rounded"
+                                        >
+                                            <option value="pending">Pending</option>
+                                            <option value="active">Active</option>
+                                            <option value="suspended">Suspended</option>
+                                        </select>
+                                    </td>
+                                    <td className="border p-3 text-center">
+                                        <button
+                                            onClick={() => handleDeleteStore(store.id)}
+                                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
     );
 }
 

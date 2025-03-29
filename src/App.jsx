@@ -50,6 +50,7 @@ import AdminRoute from "./components/admin/AdminRoute"
 import AdminDashboard from "./pages/admin/AdminDashboard"
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminStores from "./pages/admin/AdminStores";
+import AdminBooks from "./pages/admin/AdminBooks";
 
 
 function App() {
@@ -121,6 +122,9 @@ function App() {
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
           <Route path="/admin/stores" element={<AdminRoute><AdminStores /></AdminRoute>} />
+          <Route path="/admin/books" element={<AdminRoute><AdminBooks /></AdminRoute>} />
+
+
           {/* Stores */}
           <Route path="/dashboard" element={<ProtectedRoute><StoreDashboard /></ProtectedRoute>} />
           <Route path="/store/create" element={<CreateStore />} />
