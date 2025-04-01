@@ -6,7 +6,7 @@ const Cart = ({ updateCartItemCount }) => {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedItems, setSelectedItems] = useState([]);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const fetchCart = async () => {
         try {
@@ -23,27 +23,17 @@ const Cart = ({ updateCartItemCount }) => {
         fetchCart();
     }, []);
 
-    // Toggle item selection
     const toggleItemSelection = (itemId) => {
-        setSelectedItems((prev) => {
-            const newSelection = prev.includes(itemId)
-                ? prev.filter((id) => id !== itemId)
-                : [...prev, itemId];
-
-            return newSelection;
-        });
+        setSelectedItems((prev) =>
+            prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]
+        );
     };
 
-    // Select all items
     const toggleSelectAll = () => {
-        if (selectedItems.length === cart.items.length) {
-            setSelectedItems([]); // Uncheck all
-        } else {
-            setSelectedItems(cart.items.map((item) => item.id)); // Check all
-        }
+        if (!cart || !cart.items) return;
+        setSelectedItems(selectedItems.length === cart.items.length ? [] : cart.items.map((item) => item.id));
     };
 
-    // Remove item from cart
     const handleRemove = async (itemId) => {
         try {
             await api.delete(`/cart/remove/${itemId}/`);
@@ -51,14 +41,13 @@ const Cart = ({ updateCartItemCount }) => {
                 ...prev,
                 items: prev.items.filter((item) => item.id !== itemId),
             }));
-            setSelectedItems((prev) => prev.filter((id) => id !== itemId)); // Remove from selection
+            setSelectedItems((prev) => prev.filter((id) => id !== itemId));
             updateCartItemCount();
         } catch (error) {
             console.error("Error removing item:", error);
         }
     };
 
-    // Update quantity
     const handleQuantityChange = async (itemId, newQuantity) => {
         try {
             if (newQuantity <= 0) {
@@ -73,87 +62,76 @@ const Cart = ({ updateCartItemCount }) => {
         }
     };
 
-    // Place order
     const handlePlaceOrder = async () => {
-        // try {
-        //     const payload = { cart_item_ids: selectedItems };
-        //     const res = await api.post("/orders/create/", payload);
-        //     console.log("Order placed:", res.data);
-        //     setSelectedItems([]);
-        //     updateCartItemCount();
-        //     navigate("/orders/")
-
-        // } catch (error) {
-        //     console.error("Error placing order:", error);
-        // }
-        console.log("cart_item_ids: ", selectedItems)
         if (selectedItems.length === 0) return;
         navigate("/place-order", { state: { selectedItems } });
     };
 
-    if (loading) return <p>Loading cart...</p>;
-    if (!cart || cart.items.length === 0) return <p>Your cart is empty.</p>;
-
-    const allSelected = selectedItems.length === cart.items.length && cart.items.length > 0;
-    const canPlaceOrder = selectedItems.length > 0;
-
     return (
-        <div className="p-6 max-w-3xl mx-auto bg-white shadow-md rounded-lg">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Shopping Cart</h2>
-            <label className="flex items-center space-x-2 mb-4 cursor-pointer">
-                <input
-                    type="checkbox"
-                    checked={allSelected}
-                    onChange={toggleSelectAll}
-                    className="form-checkbox h-5 w-5 text-blue-600"
-                />
-                <span className="text-gray-700">Select All</span>
-            </label>
-            {cart.items.map((item) => (
-                <div key={item.id} className="flex justify-between items-center p-4 mb-4 bg-gray-50 rounded-lg shadow-sm">
-                    <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        onChange={() => toggleItemSelection(item.id)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                    />
-                    <div className="flex-1 ml-4">
-                        <p className="font-semibold text-gray-800">{item.book_title}</p>
-                        <p className="text-gray-600">Price: ${item.price}</p>
-                        <div className="flex items-center space-x-2 mt-2">
+        <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center">
+                Shopping Cart
+            </h1>
+            {loading && <p className="text-soft-gray font-inter text-center">Loading cart...</p>}
+            {!cart || !cart.items || cart.items.length === 0 ? (
+                <p className="text-soft-gray font-inter text-center">Your cart is empty.</p>
+            ) : (
+                <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
+                    <label className="flex items-center gap-2 mb-4 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={selectedItems.length === cart.items.length && cart.items.length > 0}
+                            onChange={toggleSelectAll}
+                            className="h-5 w-5 text-forest rounded focus:ring-forest"
+                        />
+                        <span className="text-soft-gray font-inter">Select All</span>
+                    </label>
+                    {cart.items.map((item) => (
+                        <div key={item.id} className="flex items-center p-4 mb-4 bg-beige rounded-md">
+                            <input
+                                type="checkbox"
+                                checked={selectedItems.includes(item.id)}
+                                onChange={() => toggleItemSelection(item.id)}
+                                className="h-5 w-5 text-forest rounded focus:ring-forest"
+                            />
+                            <div className="flex-1 ml-4">
+                                <p className="font-semibold text-forest font-inter">{item.book_title}</p>
+                                <p className="text-soft-gray font-inter"><span className="text-burnt-orange">${item.price}</span></p>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <button
+                                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                        className="bg-soft-gray text-white px-3 py-1 rounded-full hover:bg-forest transition-colors"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="text-forest font-inter">{item.quantity}</span>
+                                    <button
+                                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                        className="bg-soft-gray text-white px-3 py-1 rounded-full hover:bg-forest transition-colors"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                                <p className="text-soft-gray font-inter mt-2">Total: <span className="text-burnt-orange">${item.total_price}</span></p>
+                            </div>
                             <button
-                                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                className="bg-gray-200 px-3 py-1 rounded-full text-gray-700 hover:bg-gray-300"
+                                onClick={() => handleRemove(item.id)}
+                                className="text-red-500 hover:text-red-700 font-inter ml-4"
                             >
-                                -
-                            </button>
-                            <span className="text-gray-800">{item.quantity}</span>
-                            <button
-                                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                className="bg-gray-200 px-3 py-1 rounded-full text-gray-700 hover:bg-gray-300"
-                            >
-                                +
+                                Remove
                             </button>
                         </div>
-                        <p className="text-gray-600 mt-2">Total: ${item.total_price}</p>
-                    </div>
+                    ))}
+                    <h3 className="text-xl font-semibold text-forest mt-6 font-inter">Total Price: <span className="text-burnt-orange">${cart.total_price}</span></h3>
                     <button
-                        onClick={() => handleRemove(item.id)}
-                        className="text-red-500 hover:underline ml-4"
+                        onClick={handlePlaceOrder}
+                        disabled={selectedItems.length === 0}
+                        className={`mt-6 px-6 py-3 rounded-md text-white font-inter ${selectedItems.length > 0 ? "bg-forest hover:bg-burnt-orange" : "bg-soft-gray cursor-not-allowed"} transition-colors`}
                     >
-                        Remove
+                        Place Order
                     </button>
                 </div>
-            ))}
-            <h3 className="text-xl font-bold mt-6 text-gray-800">Total Price: ${cart.total_price}</h3>
-            <button
-                onClick={handlePlaceOrder}
-                disabled={!canPlaceOrder}
-                className={`mt-6 px-6 py-3 rounded-lg text-white ${canPlaceOrder ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"
-                    }`}
-            >
-                Place Order
-            </button>
+            )}
         </div>
     );
 };

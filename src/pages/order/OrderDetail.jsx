@@ -3,8 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
 
 const OrderDetail = () => {
-  const { id } = useParams(); 
-  const navigate = useNavigate();
+  const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [canceling, setCanceling] = useState(false);
@@ -38,36 +37,53 @@ const OrderDetail = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!order) return <p>Order not found.</p>;
-
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white shadow-lg rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">Order #{order.id}</h2>
-      <p>Status: <span className="font-medium">{order.order_status}</span></p>
-      <p>Total Price: <span className="font-medium">${order.total_price}</span></p>
-      <p>Payment Method: <span className="font-medium">{order.payment_method}</span></p>
-      <p>Payment Status: <span className="font-medium">{order.payment_status}</span></p>
-      <p>Ordered At: {new Date(order.created_at).toLocaleString()}</p>
-
-      <h3 className="mt-4 text-lg font-semibold">Items</h3>
-      <ul className="mt-2">
-        {order.items.map(item => (
-          <li key={item.id} className="border p-2 rounded my-2">
-            {item.quantity}x <span className="font-medium">{item.book_title}</span> - ${item.price}
-          </li>
-        ))}
-      </ul>
-
-      {/* Cancel Order Button - Only if status is Pending */}
-      {order.order_status === "pending" && (
-        <button
-          onClick={handleCancelOrder}
-          disabled={canceling}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-400"
-        >
-          {canceling ? "Cancelling..." : "Cancel Order"}
-        </button>
+    <div className="container mx-auto p-8 min-h-screen">
+      <h1 className="text-4xl text-forest mb-8 text-center">Order Details</h1>
+      {loading && <p className="text-soft-gray font-inter text-center">Loading order...</p>}
+      {!order && <p className="text-soft-gray font-inter text-center">Order not found.</p>}
+      {order && (
+        <div className="bg-white shadow-md rounded-lg p-6 max-w-2xl mx-auto transition-all hover:shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold text-forest font-inter">Order #{order.id}</h2>
+            <span className="text-lg font-semibold text-forest bg-beige px-3 py-1 rounded-md">
+              {order.order_status.toUpperCase()}
+            </span>
+          </div>
+          <div className="space-y-2 text-soft-gray font-inter">
+            <p>Ordered at: <span className="font-semibold">{new Date(order.created_at).toLocaleString()}</span></p>
+            <p>Total: <span className="font-semibold text-burnt-orange">${order.total_price}</span></p>
+            <p>Payment Method: <span className="font-semibold text-forest">{order.payment_method.toUpperCase()}</span></p>
+            <p>Payment Status: <span className="font-semibold text-forest">{order.payment_status.toUpperCase()}</span></p>
+          </div>
+  
+          <h3 className="mt-6 text-lg font-semibold text-forest font-inter">Items</h3>
+          <ul className="mt-2 space-y-2">
+            {order.items.map(item => (
+              <li
+                key={item.id}
+                className="flex justify-between p-3 bg-beige rounded-md hover:bg-opacity-80 transition-colors"
+              >
+                <span className="text-soft-gray font-inter">
+                  {item.quantity}x <span className="font-semibold text-forest">{item.book_title}</span>
+                </span>
+                <span className="text-burnt-orange font-semibold font-inter">${item.price}</span>
+              </li>
+            ))}
+          </ul>
+  
+          {order.order_status === "pending" && (
+            <button
+              onClick={handleCancelOrder}
+              disabled={canceling}
+              className={`mt-6 px-6 py-2 rounded-md text-white font-inter transition-colors ${
+                canceling ? "bg-soft-gray cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+              }`}
+            >
+              {canceling ? "Cancelling..." : "Cancel Order"}
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

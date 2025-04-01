@@ -1,2 +1,29 @@
 @import "tailwindcss";
-/* CA8F50 */
+
+@theme {
+  --color-beige: #F5F1E9;        /* Background */
+  --color-forest: #2F4F4F;       /* Primary accent */
+  --color-soft-gray: #6B7280;    /* Text */
+  --color-burnt-orange: #D97706; /* Highlights */
+  --font-playfair: "Playfair Display", serif; /* Headings */
+  --font-inter: Inter, sans-serif;           /* Body */
+  --font-roboto: "Roboto", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-beige text-soft-gray font-inter;
+  }
+  h1, h2, h3 {
+    @apply font-playfair text-forest;
+  }
+}
+
+@layer components {
+  .book-card {
+    @apply bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300;
+  }
+  .btn-primary {
+    @apply bg-forest text-white px-4 py-2 rounded-md hover:bg-burnt-orange transition-colors duration-200;
+  }
+}

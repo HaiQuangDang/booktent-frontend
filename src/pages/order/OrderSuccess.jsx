@@ -22,12 +22,10 @@ const OrderSuccess = () => {
                 const res = await api.post("/orders/payment-success/", { session_id: sessionId });
                 setMessage("Payment successful! Redirecting to your orders...");
                 setTimeout(() => navigate("/orders/list"), 3000);
-                console.log(res.response)
             } catch (error) {
-                console.error("Payment verification failed:", error);
+                console.error(error);
                 setMessage("Payment verification failed.");
             } finally {
-                
                 setLoading(false);
             }
         };
@@ -36,10 +34,12 @@ const OrderSuccess = () => {
     }, [searchParams, navigate]);
 
     return (
-        <div className="p-6 max-w-lg mx-auto bg-white shadow-md rounded-lg text-center">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Payment Status</h2>
-            <p className="text-gray-600">{message}</p>
-            {loading && <p className="text-blue-500">Checking...</p>}
+        <div className="container mx-auto p-8 min-h-screen">
+            <div className="bg-white shadow-md rounded-lg p-6 max-w-lg mx-auto text-center">
+                <h2 className="text-2xl font-semibold text-forest mb-4 font-inter">Order Confirmed</h2>
+                <p className="text-soft-gray font-inter">{message}</p>
+                {loading && <p className="text-forest font-inter">Checking...</p>}
+            </div>
         </div>
     );
 };

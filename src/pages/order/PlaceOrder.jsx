@@ -40,7 +40,7 @@ const PlaceOrder = ({ updateCartItemCount }) => {
 
             // Extract all order IDs
             const orderIds = res.data.map(order => order.id);
-            
+
             if (paymentMethod === "online") {
                 const checkoutUrl = await createStripeCheckoutSession(orderIds);
 
@@ -60,38 +60,67 @@ const PlaceOrder = ({ updateCartItemCount }) => {
 
     if (loading) return <p>Loading...</p>;
     if (!cart) return <p>Cart not found.</p>;
+    console.log(cart)
 
     return (
-        <div className="p-6 max-w-3xl mx-auto bg-white shadow-md rounded-lg">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Confirm Your Order</h2>
-            
-            {cart.items.filter(item => selectedItems.includes(item.id)).map((item) => (
-                <div key={item.id} className="p-4 bg-gray-50 rounded-lg mb-2">
-                    <p className="font-semibold text-gray-800">{item.book_title}</p>
-                    <p className="text-gray-600">Price: ${item.price}</p>
-                    <p className="text-gray-600">Quantity: {item.quantity}</p>
-                    <p className="text-gray-600">Total: ${item.total_price}</p>
+        <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center">Confirm Your Order</h1>
+            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {!cart && <p className="text-soft-gray font-inter text-center">Cart not found.</p>}
+            {cart && (
+                <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
+                    {Object.entries(
+                        cart.items
+                            .filter(item => selectedItems.includes(item.id))
+                            .reduce((acc, item) => {
+                                (acc[item.store_id] = acc[item.store_id] || []).push(item);
+                                return acc;
+                            }, {})
+                    ).map(([storeId, items]) => (
+                        <div key={storeId} className="mb-6">
+                            <h3 className="text-lg font-semibold text-forest mb-2 font-inter">
+                                Order from: {items[0].store_name}
+                            </h3>
+                            {items.map(item => (
+                                <div key={item.id} className="p-4 bg-beige rounded-md mb-2">
+                                    <p className="font-semibold text-forest font-inter">
+                                        <span className="text-soft-gray font-inter">{item.quantity}x </span>{item.book_title}
+                                    </p>
+                                    <p className="text-soft-gray font-inter">
+                                        <span className="text-burnt-orange">${item.price}</span>
+                                    </p>
+                                    <p className="text-soft-gray font-inter">Total: <span className="text-burnt-orange">${item.total_price}</span></p>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+
+                    <h3 className="text-xl font-semibold text-forest mb-4 font-inter">Choose Payment Method</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            onClick={() => setPaymentMethod("online")}
+                            className={`p-4 border rounded-md flex items-center gap-2 ${paymentMethod === "online" ? "border-forest bg-beige" : "border-soft-gray"}`}
+                        >
+                            <img src={stripeLogo} alt="Stripe" className="w-20" />
+                            <span className="text-forest font-inter">Stripe</span>
+                        </button>
+                        <button
+                            onClick={() => setPaymentMethod("cod")}
+                            className={`p-4 border rounded-md flex items-center gap-2 ${paymentMethod === "cod" ? "border-forest bg-beige" : "border-soft-gray"}`}
+                        >
+                            <img src={cashOnDelivery} alt="Cash on Delivery" className="w-10" />
+                            <span className="text-forest font-inter">Cash on Delivery</span>
+                        </button>
+                    </div>
+
+                    <button
+                        onClick={handleConfirmOrder}
+                        className="mt-6 px-6 py-3 rounded-md bg-forest text-white hover:bg-burnt-orange transition-colors w-full font-inter"
+                    >
+                        Confirm Order
+                    </button>
                 </div>
-            ))}
-
-            <h3 className="text-xl font-bold mt-6 text-gray-800">Choose Payment Method</h3>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-                <button onClick={() => setPaymentMethod("online")} className={`p-4 border rounded-lg flex items-center space-x-2 ${paymentMethod === "online" ? "border-blue-500" : "border-gray-300"}`}>
-                    <img src={stripeLogo} alt="Stripe" className="w-22" />
-                    <span>Stripe</span>
-                </button>
-                <button onClick={() => setPaymentMethod("cod")} className={`p-4 border rounded-lg flex items-center space-x-2 ${paymentMethod === "cod" ? "border-green-500" : "border-gray-300"}`}>
-                    <img src={cashOnDelivery} alt="Cash on Delivery" className="w-10" />
-                    <span>Cash on Delivery</span>
-                </button>
-            </div>
-
-            <button
-                onClick={handleConfirmOrder}
-                className="mt-6 px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 w-full"
-            >
-                Confirm Order
-            </button>
+            )}
         </div>
     );
 };

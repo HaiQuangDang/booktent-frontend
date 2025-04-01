@@ -17,7 +17,6 @@ function BookDetail({ updateCartItemCount }) {
         checkIfInCart();
     }, [id]);
 
-    // fetch store's book
     const fetchBook = async () => {
         try {
             const response = await api.get(`/books/book/${id}/`);
@@ -27,7 +26,7 @@ function BookDetail({ updateCartItemCount }) {
             setErrorMessage(error.response?.data?.detail || "Failed to fetch book.")
         }
     }
-    // check if in cart
+
     const checkIfInCart = async () => {
         if (localStorage.getItem(ACCESS_TOKEN)) {
             try {
@@ -39,17 +38,13 @@ function BookDetail({ updateCartItemCount }) {
         }
     };
 
-
-    // add to cart
     const handleAddToCart = async (bookId) => {
         try {
             if (!localStorage.getItem(ACCESS_TOKEN)) {
                 alert("My lovely friend, please login to add this item to cart.")
-                navigate("/login")
             }
             else {
                 const res = await api.post("/cart/", { book_id: bookId, quantity: 1 });
-                alert("Book added to cart!");
                 checkIfInCart();
                 updateCartItemCount();
             }
@@ -58,73 +53,92 @@ function BookDetail({ updateCartItemCount }) {
             alert("Failed to add book to cart.");
         }
     };
-
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center">
+                Book Details
+            </h1>
             {book && (
-                <div className="bg-white shadow-md rounded-lg p-6">
-                    <img
-                        className="w-1/2 h-auto max-h-48 object-contain rounded-md mb-4"
-                        src={book.cover_image}
-                        alt={`${book.title} cover`}
-                    />
-                    <h1 className="text-2xl font-bold mb-2">Title: {book.title}</h1>
-                    <p className="text-gray-700 mb-2">Description: {book.description}</p>
-                    <p className="text-gray-700 mb-2">
-                        <strong>Authors:</strong>{" "}
-                        {book.author_names.map((name, index) => (
-                            <span key={book.authors[index]}>
+                <div className="bg-white shadow-md rounded-lg p-6 flex gap-6">
+                    <div className="w-1/3 flex-shrink-0">
+                        <img
+                            className="w-full max-h-80 object-contain rounded-md"
+                            src={book.cover_image}
+                            alt={`${book.title} cover`}
+                        />
+                    </div>
+                    <div className="w-2/3 flex flex-col">
+                        <h1 className="text-2xl font-semibold text-forest mb-3 font-inter">
+                            {book.title}
+                        </h1>
+                        <p className="text-soft-gray mb-4 font-inter">{book.description}</p>
+                        <p className="text-soft-gray mb-2 font-inter">
+                            <span className="text-lg text-burnt-orange font-semibold">${book.price}</span>
+                        </p>
+                        <p className="text-soft-gray mb-2 font-inter">
+                            Author:{" "}
+                            {book.author_names.map((name, index) => (
+                                <span key={book.authors[index]}>
+                                    <Link
+                                        to={`/author/${book.authors[index]}`}
+                                        className="text-forest hover:text-burnt-orange transition-colors"
+                                    >
+                                        {name}
+                                    </Link>
+                                    {index < book.author_names.length - 1 ? ", " : ""}
+                                </span>
+                            ))}
+
+                        </p>
+
+                        <p className="text-soft-gray mb-2 font-inter">
+                            Published: <span className="text-forest">{book.published_year}</span>
+                        </p>
+                        <p className="text-soft-gray mb-2 font-inter">
+                            Genres:{" "}
+                            {book.genre_names.map((name, index) => (
                                 <Link
-                                    to={`/author/${book.authors[index]}`}
-                                    className="text-blue-500 hover:text-blue-700 hover:underline transition duration-300"
+                                    key={index}
+                                    to={`/genre/${book.genres[index]}`}
+                                    className="text-forest hover:text-burnt-orange transition-colors"
                                 >
                                     {name}
                                 </Link>
-                                {index < book.author_names.length - 1 ? ", " : ""}
-                            </span>
-                        ))}
-                    </p>
-                    <p className="text-gray-700 mb-2">Published Year: {book.published_year}</p>
-                    <p className="text-gray-700 mb-2">
-                        Genres: {book.genre_names.map((name, index) => (
-                            <Link key={index} to={`/genre/${book.genres[index]}`} className="text-blue-500 hover:underline">
-                                {name}
-                            </Link>
-                        )).reduce((prev, curr) => [prev, ", ", curr])}
-                    </p>
-                    <p className="text-gray-700 mb-2">Price: ${book.price}</p>
-                    <p className="text-gray-700 mb-2">Stock: {book.stock_quantity ? book.stock_quantity + " books" : "Out of Stock"}</p>
-                    <p className="text-gray-700 mb-2">
-                        Sold by:{" "}
-                        <Link
-                            to={`/store/${book.store}`}
-                            className="text-blue-500 hover:text-blue-700 hover:underline transition duration-300"
-                        >
-                            {book.store_name}
-                        </Link>
-                    </p>
-                    {book.stock_quantity > 0 && (
-                        inCart ? (
-                            <Link to="/cart">
-                                <button className="bg-blue-500 text-white px-4 py-2 rounded">
-                                    In Cart
-                                </button>
-                            </Link>
-                        ) : (
-                            <button
-                                onClick={() => handleAddToCart(book.id)}
-                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                            )).reduce((prev, curr) => [prev, ", ", curr])}
+                        </p>
+
+                        <p className="text-soft-gray mb-2 font-inter">
+                            In stock: <span className="text-forest">{book.stock_quantity ? `${book.stock_quantity} books` : "Out of Stock"}</span>
+                        </p>
+                        <p className="text-soft-gray mb-4 font-inter">
+                            Sold by:{" "}
+                            <Link
+                                to={`/store/${book.store}`}
+                                className="text-forest hover:text-burnt-orange transition-colors"
                             >
-                                Add to Cart
-                            </button>
-                        )
-                    )}
-
+                                {book.store_name}
+                            </Link>
+                        </p>
+                        {book.stock_quantity > 0 && (
+                            inCart ? (
+                                <Link to="/cart" className="mt-auto">
+                                    <button className="w-40 bg-soft-gray text-white px-4 py-2 rounded-md hover:bg-forest transition-colors">
+                                        IN CART
+                                    </button>
+                                </Link>
+                            ) : (
+                                <button
+                                    onClick={() => handleAddToCart(book.id)}
+                                    className="btn-primary w-40 mt-auto"
+                                >
+                                    ADD TO CART
+                                </button>
+                            )
+                        )}
+                    </div>
                 </div>
-
             )}
-
-            {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
+            {errorMessage && <p className="text-red-500 mt-4 text-center font-inter">{errorMessage}</p>}
         </div>
     );
 }

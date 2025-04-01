@@ -24,7 +24,6 @@ function AdminRoute({ children }) {
         }
 
         const decoded = jwtDecode(token);
-        console.log(decoded)
         if (decoded.is_staff) {
             setIsAdmin(true);
             console.log("is_staff: " + decoded.is_staff)
@@ -40,10 +39,10 @@ function AdminRoute({ children }) {
     }
 
     if (!isAdmin) {
-        if (!alertShown.current) {
-            alert(errorMessage); // Show alert only once
-            alertShown.current = true;
-        }
+        // if (!alertShown.current) {
+        //     alert(errorMessage); // Show alert only once
+        //     alertShown.current = true;
+        // }
         return <Navigate to="/" />;
     }
 

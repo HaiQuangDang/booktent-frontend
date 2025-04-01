@@ -1,80 +1,87 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logofit.svg";
+import cart from "../../assets/cart.svg"
 
 export default function Header({ user, myStore, cartItemCount }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     setDropdownOpen(false);
-  }, [])
 
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <header className="shadow-md py-4 px-6 flex items-center justify-between bg-white">
-      {/* Logo */}
+    <header className="bg-beige shadow-md py-4 px-6 flex items-center justify-between">
       <div className="flex items-center">
-        <Link to={"/"}><img src={Logo} alt="BookTent Logo" className="w-50" /></Link>
+        <Link to="/">
+          <img src={Logo} alt="BookTent Logo" className="w-40" />
+        </Link>
       </div>
 
-      {/* Search Bar */}
       <div className="relative w-1/3">
         <input
           type="text"
           placeholder="Search books..."
-          className="w-full p-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 pl-4 pr-10 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
         />
-        <div className="absolute right-3 top-2.5 text-gray-500">🔍</div>
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-soft-gray">🔍</span>
       </div>
 
-      {/* Navbar Links */}
       <div className="flex items-center gap-6">
-        <div className="font-medium flex gap-4">
+        <div className="font-medium font-inter text-forest">
           {myStore ? (
-            <Link to={`/dashboard`} className="text-blue-500 hover:text-blue-700">
+            <Link to="/dashboard" className="hover:text-burnt-orange transition-colors">
               My Store
             </Link>
           ) : (
-            <Link to="/store/create" className="text-blue-500 hover:text-blue-700">
+            <Link to="/store/create" className="hover:text-burnt-orange transition-colors">
               Create Store?
             </Link>
           )}
         </div>
 
-        {/* Profile Dropdown */}
         {user ? (
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="text-blue-500 hover:text-blue-700"
+              className="font-inter text-forest hover:text-burnt-orange transition-colors"
             >
               My Profile
             </button>
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
-                <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-soft-gray rounded-md shadow-lg">
+                <Link to="/profile" className="block px-4 py-2 text-soft-gray hover:bg-beige font-inter">
                   Profile
                 </Link>
-                <Link to="/orders/list" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                <Link to="/orders/list" className="block px-4 py-2 text-soft-gray hover:bg-beige font-inter">
                   My Orders
                 </Link>
-                <Link to="/logout" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                <Link to="/logout" className="block px-4 py-2 text-soft-gray hover:bg-beige font-inter">
                   Logout
                 </Link>
               </div>
             )}
           </div>
         ) : (
-          <Link to="/login" className="text-blue-500 hover:text-blue-700">
+          <Link to="/login" className="font-inter text-forest hover:text-burnt-orange transition-colors">
             Login
           </Link>
         )}
 
-        {/* Cart Icon with Badge */}
-        <Link to="/cart" className="relative text-gray-600 hover:text-gray-800">
-          🛒
+        <Link to="/cart" className="relative text-forest hover:text-burnt-orange transition-colors">
+          <img src={cart} alt="Cart Icon"/>
           {cartItemCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
+            <span className="absolute -top-2 -right-2 bg-burnt-orange text-white text-xs font-bold rounded-full px-1.5 py-0.5">
               {cartItemCount}
             </span>
           )}

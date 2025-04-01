@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import api from "../../api"
-import AdminSidebar from "../../components/admin/AdminSidebar";
 
 
 const AdminDashboard = () => {
@@ -45,11 +44,7 @@ const AdminDashboard = () => {
     if (!stats || !recentActivity || !earnings) return <p>Loading...</p>;
 
     return (
-        <div className="flex">
-            {/* Sidebar */}
-            <AdminSidebar />
-
-            {/* Main Content */}
+        
             <div className="flex-1 p-6">
                 <h1 className="text-2xl font-bold">Admin Dashboard</h1>
                 <p className="text-gray-600">Overview of the platform</p>
@@ -135,10 +130,6 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             </div>
-        </div>
-
-
-
     );
 };
 
