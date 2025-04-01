@@ -29,7 +29,6 @@ function AdminTransactionDetail() {
 
     return (
         <div className="flex">
-            <AdminSidebar />
             <div className="flex-1 p-6 bg-gray-100 min-h-screen">
                 <h2 className="text-2xl font-semibold mb-4">Transaction #{transaction.id}</h2>
                 <div className="bg-white p-6 rounded-xl shadow-md">

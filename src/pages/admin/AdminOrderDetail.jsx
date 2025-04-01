@@ -29,12 +29,9 @@ function AdminOrderDetail() {
 
     return (
         <div className="flex">
-            <AdminSidebar />
             <div className="flex-1 p-6 bg-gray-100 min-h-screen">
                 <div className="bg-white p-6 rounded-xl shadow-md">
                     <h2 className="text-2xl font-semibold mb-6">Order #{order.id} Details</h2>
-
-                    {/* Order Information */}
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         <p><strong>Customer:</strong> {order.customer_name} (ID: {order.user})</p>
                         <p><strong>Store:</strong> {order.store_name}</p>

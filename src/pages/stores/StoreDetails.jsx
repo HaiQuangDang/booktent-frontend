@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { USER } from "../../constants";
 import BookOwn from "../../components/stores/BookOwn";
+import BookList from "../../components/books/BookList";
 import { Link } from "react-router-dom";
 
 // This is for customer view
@@ -38,7 +39,7 @@ function StoreDetails() {
 
     }, [id]);
 
-  
+
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete your store?")) return;
 
@@ -52,61 +53,86 @@ function StoreDetails() {
         }
     };
 
-    if (loading) return <p>Loading store...</p>;
-    if (error) return <p>{error}</p>;
-    if (!store) return <p>Store not found.</p>;
-
+        console.log(store)
     return (
-        <div className="container mx-auto p-4">
-            {/* store info */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <h1 className="text-3xl font-bold mb-4">Store: {store.name}</h1>
-                <img src={store.logo} alt="Store Logo" className="w-32 h-32 object-cover mb-4" />
-                <p className="text-gray-700 mb-2">{store.description}</p>
-                <p className="text-gray-700 mb-2"><strong>Contact:</strong> {store.contact_info}</p>
-                <p className="text-green-700 mb-2"><strong>Status:</strong> {store.status}</p>
-                <p className="text-gray-700 mb-4"><strong>Created At:</strong> {new Date(store.created_at).toLocaleDateString()}</p>
-
-                {/* Show Edit Button only if user owns the store */}
-                {isOwner && (
-                    <div className="flex space-x-4">
-                        <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onClick={() => navigate(`/store/orders-list`)}
-                        >
-                            Orders Management
-                        </button>
-                        <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onClick={() => navigate(`/store/${id}/edit`)}
-                        >
-                            Edit Store
-                        </button>
-                        <button
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                            onClick={() => handleDelete(store.id)}
-                        >
-                            Delete
-                        </button>
+        <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center">
+                Store Details
+            </h1>
+            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {!store && <p className="text-soft-gray font-inter text-center">Store not found.</p>}
+            {store && (
+                <>
+                    <div className="bg-white shadow-md rounded-lg p-8 mb-8">
+                        <div className="flex gap-8">
+                            <div className="w-1/3 flex flex-col items-center">
+                                <img
+                                    src={store.logo || "https://via.placeholder.com/150"}
+                                    alt="Store Logo"
+                                    className="w-48 h-48 object-cover rounded-md mb-6 border-2 border-forest transition-transform hover:scale-105"
+                                />
+                            </div>
+                            <div className="w-2/3">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h1 className="text-3xl font-semibold text-forest">{store.name}</h1>
+                                    <span
+                                        className={`text-lg font-semibold px-4 py-1 rounded-md font-inter ${store.status === "active" ? "bg-forest text-white" : "bg-soft-gray text-forest"
+                                            }`}
+                                    >
+                                        {store.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="space-y-2 text-soft-gray font-inter">
+                                    <p>{store.description}</p>
+                                    <p><strong className="text-forest">Contact:</strong> {store.contact_info}</p>
+                                    <p><strong className="text-forest">Created At:</strong> {new Date(store.created_at).toLocaleDateString()}</p>
+                                </div>
+                                {isOwner && (
+                                    <div className="flex gap-4 mt-6">
+                                        <button
+                                            className="flex-1 bg-forest text-white px-4 py-2 rounded-md hover:bg-burnt-orange transition-colors font-inter"
+                                            onClick={() => navigate(`/store/orders-list`)}
+                                        >
+                                            Orders Management
+                                        </button>
+                                        <button
+                                            className="flex-1 bg-forest text-white px-4 py-2 rounded-md hover:bg-burnt-orange transition-colors font-inter"
+                                            onClick={() => navigate(`/store/${id}/edit`)}
+                                        >
+                                            Edit Store
+                                        </button>
+                                        <button
+                                            className="flex-1 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors font-inter"
+                                            onClick={() => handleDelete(store.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                )}
-            </div>
-            {isOwner && (
-                <Link to={store.status === "active" ? "/books/add" : "#"}>
-                    <button
-                        className={`px-4 py-2 rounded ${store.status === "active"
-                                ? "bg-blue-500 text-white hover:bg-blue-600"
-                                : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                            }`}
-                        disabled={store.status !== "active"}
-                    >
-                        Add Book
-                    </button>
-                </Link>
+
+                    {isOwner && (
+                        <div className="bg-white shadow-md rounded-lg p-8">
+                            <h3 className="text-xl font-semibold text-forest mb-4 font-inter">Manage Your Store</h3>
+                            <Link to={store.status === "active" ? "/books/add" : "#"}>
+                                <button
+                                    className={`px-4 py-2 rounded-md font-inter transition-colors ${store.status === "active"
+                                            ? "bg-forest text-white hover:bg-burnt-orange"
+                                            : "bg-soft-gray text-forest cursor-not-allowed"
+                                        }`}
+                                    disabled={store.status !== "active"}
+                                >
+                                    Add Book
+                                </button>
+                            </Link>
+                        </div>
+                    )}
+                </>
             )}
-
-            <BookOwn books={store.books} isOwner={isOwner} />
-
+            <h1 className="text-3xl font-semibold text-forest mb-2">Books</h1>
+            <BookList books={store.books} />
         </div>
     );
 }

@@ -101,61 +101,70 @@ const Setting = () => {
         }
     };
 
-    if (loading) return <p>Loading...</p>;
-
-    console.log("User: ", user)
-
     return (
-        <div className="p-4 max-w-md mx-auto">
-            <h2 className="text-xl font-bold mb-4">Account Settings</h2>
-            {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
-            {/* Avatar Upload & Preview */}
-            <div className="flex flex-col items-center mb-4">
-                <img
-                    src={preview || "/defaultuser.jpg"}
-                    alt="Profile Avatar"
-                    className="w-24 h-24 rounded-full object-cover mb-2 border"
-                    style={{ width: "96px", height: "96px", objectFit: "cover", borderRadius: "50%" }}
-                />
-                <input type="file" accept="image/*" onChange={handleFileChange} />
+        <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center font-inter">Account Settings</h1>
+            <div className="bg-white shadow-md rounded-lg p-6 max-w-md mx-auto">
+                {errorMessage && <p className="text-red-500 mb-4 text-center font-inter">{errorMessage}</p>}
+                <div className="flex flex-col items-center mb-6">
+                    <img
+                        src={preview || user.profile?.avatar || "/defaultuser.jpg"}
+                        alt="Profile Avatar"
+                        className="w-24 h-24 rounded-full mb-4 border-2 border-forest object-cover transition-transform hover:scale-105"
+                    />
+                    <label className="bg-forest text-white px-4 py-2 rounded-md hover:bg-burnt-orange transition-colors font-inter cursor-pointer">
+                        Upload Image
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <input
+                            type="text"
+                            name="username"
+                            value={user.username}
+                            onChange={handleChange}
+                            placeholder="Username"
+                            className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                        />
+                        {errorUsername && <p className="text-red-500 text-sm mt-1 font-inter">{errorUsername}</p>}
+                    </div>
+                    <div>
+                        <input
+                            type="email"
+                            name="email"
+                            value={user.email}
+                            onChange={handleChange}
+                            placeholder="Email"
+                            className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                        />
+                        {errorEmail && <p className="text-red-500 text-sm mt-1 font-inter">{errorEmail}</p>}
+                    </div>
+                    <div>
+                        <textarea
+                            name="address"
+                            value={user.profile?.address ?? ""}
+                            onChange={handleChange}
+                            placeholder="Address"
+                            className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full p-3 bg-forest text-white rounded-md hover:bg-burnt-orange transition-colors font-inter"
+                    >
+                        Update Profile
+                    </button>
+                </form>
             </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3">
-                <input
-                    type="text"
-                    name="username"
-                    value={user.username}
-                    onChange={handleChange}
-                    placeholder="Username"
-                    className="w-full p-2 border rounded"
-                />
-                {errorUsername && <p className="text-red-500 text-sm mt-1">{errorUsername}</p>}
-                <input
-                    type="email"
-                    name="email"
-                    value={user.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                    className="w-full p-2 border rounded"
-                />
-                {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
-                <textarea
-                    name="address"
-                    value={user.profile.address}
-                    onChange={handleChange}
-                    placeholder="Address"
-                    className="w-full p-2 border rounded"
-                />
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white p-2 rounded"
-                >
-                    Update Profile
-                </button>
-            </form>
         </div>
     );
+
 };
 
 export default Setting;

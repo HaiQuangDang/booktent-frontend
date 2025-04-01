@@ -60,7 +60,6 @@ function AdminAuthors() {
 
     return (
         <div className="flex">
-            <AdminSidebar />
             <div className="flex-1 p-6 bg-gray-100 min-h-screen">
                 <h2 className="text-2xl font-semibold mb-4">Manage Authors</h2>
                 <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4" onClick={() => setIsFormOpen(true)}>

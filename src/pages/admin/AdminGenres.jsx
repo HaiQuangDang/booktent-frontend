@@ -62,7 +62,6 @@ function AdminGenres() {
 
     return (
         <div className="flex">
-            <AdminSidebar />
             <div className="flex-1 p-6 bg-gray-100 min-h-screen">
                 <h2 className="text-2xl font-semibold mb-4">Manage Genres</h2>
 

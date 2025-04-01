@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logofit.svg";
 import cart from "../../assets/cart.svg"
+import avatar from "../../assets/avatar-icon.svg"
 
 export default function Header({ user, myStore, cartItemCount }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -56,7 +57,7 @@ export default function Header({ user, myStore, cartItemCount }) {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="font-inter text-forest hover:text-burnt-orange transition-colors"
             >
-              My Profile
+              <img src={avatar} alt="Avatar Icon" />
             </button>
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-soft-gray rounded-md shadow-lg">

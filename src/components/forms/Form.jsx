@@ -39,7 +39,7 @@ function Form({ route, method }) {
 
     setLoading(true);
     try {
-      const payload = method === "login" 
+      const payload = method === "login"
         ? { username, password }
         : { username, password, email };
 
@@ -48,7 +48,7 @@ function Form({ route, method }) {
       if (method === "login" && res.data) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        
+
         const userRes = await api.get("/user/me/");
         localStorage.setItem(USER, JSON.stringify(userRes.data));
 
@@ -86,96 +86,99 @@ function Form({ route, method }) {
   };
 
   return (
-    <form
-      noValidate
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md"
-    >
-      <h1 className="text-2xl font-bold mb-6">{formName}</h1>
-      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+    <div className="container mx-auto p-8 min-h-screen">
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-8 max-w-md mx-auto"
+      >
+        <h1 className="text-2xl font-semibold text-forest mb-6 text-center font-inter">{formName}</h1>
+        {errorMessage && <p className="text-red-500 mb-4 text-center font-inter">{errorMessage}</p>}
 
-      {/* Username Field */}
-      <div className="mb-4">
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-          Username
-        </label>
-        <input
-          id="username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errorUsername && <p className="text-red-500 text-sm mt-1">{errorUsername}</p>}
-      </div>
-
-      {/* Email Field (Register only) */}
-      {method === "register" && (
+        {/* Username Field */}
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
+          <label htmlFor="username" className="block text-sm font-medium text-forest font-inter">
+            Username
           </label>
           <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
           />
-          {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
+          {errorUsername && <p className="text-red-500 text-sm mt-1 font-inter">{errorUsername}</p>}
         </div>
-      )}
 
-      {/* Password Field */}
-      <div className="mb-6">
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errorPassword && <p className="text-red-500 text-sm mt-1">{errorPassword}</p>}
-      </div>
-
-      {/* Loading Indicator and Submit Button */}
-      {loading && <LoadingIndicator />}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
-      >
-        {formName}
-      </button>
-
-      {/* Navigation Links */}
-      <p className="mt-4 text-center text-sm text-gray-600">
-        {method === "login" ? (
-          <>
-            Don&apos;t have an account?{" "}
-            <a href="/register" className="text-indigo-600 hover:text-indigo-500">
-              Register
-            </a>
-          </>
-        ) : (
-          <>
-            Already have an account?{" "}
-            <a href="/login" className="text-indigo-600 hover:text-indigo-500">
-              Login
-            </a>
-          </>
+        {/* Email Field (Register only) */}
+        {method === "register" && (
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-forest font-inter">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+            />
+            {errorEmail && <p className="text-red-500 text-sm mt-1 font-inter">{errorEmail}</p>}
+          </div>
         )}
-      </p>
-    </form>
+
+        {/* Password Field */}
+        <div className="mb-6">
+          <label htmlFor="password" className="block text-sm font-medium text-forest font-inter">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+            className="mt-1 block w-full px-3 py-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+          />
+          {errorPassword && <p className="text-red-500 text-sm mt-1 font-inter">{errorPassword}</p>}
+        </div>
+
+        {/* Loading Indicator and Submit Button */}
+        {loading && <LoadingIndicator />}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 px-4 rounded-md text-white font-inter transition-colors ${loading ? "bg-soft-gray cursor-not-allowed" : "bg-forest hover:bg-burnt-orange"
+            }`}
+        >
+          {formName}
+        </button>
+
+        {/* Navigation Links */}
+        <p className="mt-4 text-center text-sm text-soft-gray font-inter">
+          {method === "login" ? (
+            <>
+              Don’t have an account?{" "}
+              <a href="/register" className="text-forest hover:text-burnt-orange transition-colors">
+                Register
+              </a>
+            </>
+          ) : (
+            <>
+              Already have an account?{" "}
+              <a href="/login" className="text-forest hover:text-burnt-orange transition-colors">
+                Login
+              </a>
+            </>
+          )}
+        </p>
+      </form>
+    </div>
   );
 }
 

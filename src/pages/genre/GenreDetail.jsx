@@ -37,34 +37,48 @@ const GenreDetail = () => {
         fetchGenreBooks();
     }, [id]);
 
-    if (loading) return <p>Loading genre...</p>;
-    if (error) return <p>{error}</p>;
-
     return (
-        <div className="container mx-auto py-8">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-bold mb-4">{genre.name}</h1>
-                <p className="text-lg text-gray-700 mb-6">{genre.description}</p>
-                <div>
-                    <h3 className="text-2xl font-semibold mb-4">Books</h3>
-                    {genreBooks && genreBooks.length > 0 ? (
-                        <ul className="space-y-4">
-                            {genreBooks.map((book) => (
-                                <li key={book.id} className="p-4 bg-gray-100 rounded-lg shadow-sm">
-                                    <h4 className="text-xl font-bold">
-                                        <Link to={`/books/${book.id}`} className="text-blue-600 hover:underline">
-                                            {book.title}
-                                        </Link>
-                                    </h4>
-                                    <p className="text-gray-600">{book.author}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-500">No books available for this genre.</p>
-                    )}
-                </div>
-            </div>
+        <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center">Genre Detail</h1>
+            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {!genre && <p className="text-soft-gray font-inter text-center">Genre not found.</p>}
+            {genre && (
+                <>
+                    <div className="bg-white shadow-md rounded-lg p-8 mb-8">
+                        <h1 className="text-4xl font-semibold text-forest mb-4 font-inter">{genre.name}</h1>
+                        <p className="text-lg text-soft-gray font-inter">{genre.description}</p>
+                    </div>
+
+                    <div className="bg-white shadow-md rounded-lg p-8">
+                        <h3 className="text-xl font-semibold text-forest mb-4 font-inter">Books in {genre.name}</h3>
+                        {genreBooks && genreBooks.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-4">
+                                {genreBooks.map((book) => (
+                                    <Link
+                                        key={book.id}
+                                        to={`/books/${book.id}`}
+                                        className="bg-white shadow-md rounded-md p-4 hover:shadow-lg transition-all"
+                                    >
+                                        {book.cover_image ? (
+                                            <img
+                                                src={book.cover_image}
+                                                alt={book.title}
+                                                className="w-full h-32 object-contain rounded-md mb-2"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-32 bg-soft-gray rounded-md mb-2" />
+                                        )}
+                                        <h4 className="text-sm font-semibold text-forest font-inter truncate">{book.title}</h4>
+                                        <p className="text-xs text-soft-gray font-inter">{book.published_year}</p>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-soft-gray font-inter">No books available for this genre.</p>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
     );
 }
