@@ -66,60 +66,120 @@ const StoreOrderDetail = () => {
         } catch (error) {
             console.error("Error canceling order:", error);
         } finally {
-          fetchOrderDetail();
+            fetchOrderDetail();
         }
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (!order) return <p>Order not found.</p>;
-
     return (
-        <div className="p-6 max-w-2xl mx-auto bg-white shadow-lg rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">Order #{order.id} Details</h2>
-            <p><strong>Status:</strong> {order.order_status}</p>
-            <p><strong>Total:</strong> ${order.total_price}</p>
-            <p><strong>Payment:</strong> {order.payment_method} - {order.payment_status}</p>
-            <ul className="mt-2">
-                {order.items.map(item => (
-                    <li key={item.id} className="border p-2 rounded my-2">
-                        {item.quantity}x <span className="font-medium">{item.book_title}</span> - ${item.price}
-                    </li>
-                ))}
-            </ul>
-            
-            {/* Status Update Section */}
-            {order.order_status !== "completed" && order.order_status !== "canceled" && order.order_status !== "refunded" && (
-                <div className="mt-4">
-                    <label className="block font-semibold">Update Status:</label>
-                    <select
-                        value={newStatus}
-                        onChange={(e) => setNewStatus(e.target.value)}
-                        className="border p-2 rounded-lg w-full"
-                    >
-                        <option value={order.order_status}>{order.order_status}</option>
-                        {ALLOWED_TRANSITIONS[order.order_status].map((status) => (
-                            <option key={status} value={status}>{status}</option>
-                        ))}
-                    </select>
-                    <button
-                        onClick={handleUpdateStatus}
-                        disabled={updating}
-                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
-                    >
-                        {updating ? "Updating..." : "Update Status"}
-                    </button>
-                </div>
-            )}
+        <div className="container mx-auto p-8 min-h-screen">
+            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {!order && <p className="text-soft-gray font-inter text-center">Order not found.</p>}
+            {order && (
+                <div className="bg-white shadow-md rounded-lg p-6 max-w-2xl mx-auto transition-all hover:shadow-lg">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-semibold text-forest font-inter">Order #{order.id}</h2>
+                        <div className="flex items-center gap-3">
+                            <span
+                                className={`text-lg font-semibold px-3 py-1 rounded-md font-inter ${order.order_status === "completed" ? "bg-forest text-white" : "bg-beige text-forest"
+                                    }`}
+                            >
+                                {order.order_status.toUpperCase()}
+                            </span>
+                            {/* Status Update */}
+                            {order.order_status !== "completed" &&
+                                order.order_status !== "canceled" &&
+                                order.order_status !== "refunded" && (
+                                    <div className="flex items-center gap-2">
+                                        <select
+                                            value={newStatus}
+                                            onChange={(e) => setNewStatus(e.target.value)}
+                                            className="p-1 border border-soft-gray rounded-md bg-white text-soft-gray font-inter focus:outline-none focus:ring-2 focus:ring-forest"
+                                        >
+                                            <option value={order.order_status}>
+                                                {order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1)}
+                                            </option>
+                                            {ALLOWED_TRANSITIONS[order.order_status].map((status) => (
+                                                <option key={status} value={status}>
+                                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            onClick={handleUpdateStatus}
+                                            disabled={updating}
+                                            className={`p-2 rounded-md text-white font-inter transition-colors ${updating ? "bg-soft-gray cursor-not-allowed" : "bg-forest hover:bg-burnt-orange"
+                                                }`}
+                                            title="Update Status"
+                                        >
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
+                            {/* Cancel Order */}
+                            {(order.order_status === "pending" || order.order_status === "processing") && (
+                                <button
+                                    onClick={handleCancelOrder}
+                                    disabled={canceling}
+                                    className={`p-2 rounded-md text-white font-inter transition-colors ${canceling ? "bg-soft-gray cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                                        }`}
+                                    title="Cancel Order"
+                                >
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    <div className="space-y-3 text-soft-gray font-inter">
+                        <p>
+                            <strong className="text-forest">Total:</strong>{" "}
+                            <span className="text-burnt-orange font-semibold">${order.total_price}</span>
+                        </p>
+                        <p>
+                            <strong className="text-forest">Payment:</strong> {order.payment_method} - {order.payment_status}
+                        </p>
+                    </div>
 
-            {/* Cancel Order Button */}
-            {(order.order_status === "pending" || order.order_status === "processing") && (
-                <button
-                    onClick={handleCancelOrder}
-                    disabled={canceling}
-                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
-                >
-                    {canceling ? "Canceling..." : "Cancel Order"}
-                </button>
+                    <h3 className="text-lg font-semibold text-forest mt-6 mb-3 font-inter">Items</h3>
+                    <ul className="space-y-2">
+                        {order.items.map((item) => (
+                            <li
+                                key={item.id}
+                                className="flex justify-between p-3 bg-beige rounded-md hover:bg-opacity-80 transition-colors"
+                            >
+                                <span className="text-soft-gray font-inter">
+                                    {item.quantity}x <span className="font-semibold text-forest">{item.book_title}</span>
+                                </span>
+                                <span className="text-burnt-orange font-semibold font-inter">${item.price}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </div>
     );

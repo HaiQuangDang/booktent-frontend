@@ -53,7 +53,7 @@ function StoreDetails() {
         }
     };
 
-        console.log(store)
+    console.log(store)
     return (
         <div className="container mx-auto p-8 min-h-screen">
             <h1 className="text-4xl text-forest mb-8 text-center">
@@ -119,8 +119,8 @@ function StoreDetails() {
                             <Link to={store.status === "active" ? "/books/add" : "#"}>
                                 <button
                                     className={`px-4 py-2 rounded-md font-inter transition-colors ${store.status === "active"
-                                            ? "bg-forest text-white hover:bg-burnt-orange"
-                                            : "bg-soft-gray text-forest cursor-not-allowed"
+                                        ? "bg-forest text-white hover:bg-burnt-orange"
+                                        : "bg-soft-gray text-forest cursor-not-allowed"
                                         }`}
                                     disabled={store.status !== "active"}
                                 >
@@ -129,10 +129,12 @@ function StoreDetails() {
                             </Link>
                         </div>
                     )}
+
+                    <h1 className="text-3xl font-semibold text-forest mb-2">Books</h1>
+                    <BookList books={store.books} />
                 </>
             )}
-            <h1 className="text-3xl font-semibold text-forest mb-2">Books</h1>
-            <BookList books={store.books} />
+
         </div>
     );
 }

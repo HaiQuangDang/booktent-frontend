@@ -21,7 +21,8 @@ import EditStorePage from "./pages/stores/EditStorePage";
 import StoreOrders from "./pages/stores/StoreOrders";
 import StoreOrderDetail from "./pages/stores/StoreOrderDetail";
 import StoreDashboard from "./pages/stores/StoreDashboard";
-
+import StoreBooks from "./pages/stores/StoreBooks";
+import StoreTransactions from "./pages/stores/StoreTransactions";
 // Book Pages
 import BookDetail from "./pages/books/BookDetail";
 import EditBookPage from "./pages/books/EditBookPage";
@@ -132,6 +133,8 @@ function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, upd
             </ProtectedRoute>
           }
         />
+        <Route path="/store/books" element={<StoreBooks />} />
+        <Route path="/store/transactions" element={<StoreTransactions />} />
 
         {/* Book Routes */}
         <Route
