@@ -33,7 +33,7 @@ const StoreOrders = () => {
 
   return (
     <div className="container mx-auto p-8 min-h-screen">
-      <h1 className="text-4xl text-forest mb-8 text-center">Store Orders</h1>
+      <h1 className="text-4xl text-forest mb-8 text-center">Orders</h1>
 
       {/* Filters */}
       <div className="mb-6 max-w-4xl mx-auto flex gap-4">

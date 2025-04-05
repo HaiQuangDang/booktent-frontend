@@ -57,7 +57,7 @@ const StoreBooks = () => {
 
     return (
         <div className="container mx-auto p-8 min-h-screen">
-            <h1 className="text-4xl text-forest mb-8 text-center">Store Books</h1>
+            <h1 className="text-4xl text-forest mb-8 text-center">Books</h1>
 
             <div className="max-w-4xl mx-auto mb-6 flex justify-between items-center gap-4">
                 <div className="flex gap-4">

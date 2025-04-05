@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
+import { Link } from "react-router-dom";
 
 const StoreTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -104,17 +105,22 @@ const StoreTransactions = () => {
                   </p>
                 </div>
                 <div className="text-right space-y-2">
+                <Link
+                    to={`/store/orders/${transaction.order}`}
+                    className="text-forest hover:text-burnt-orange font-inter transition-colors"
+                  >
+                    Order #{transaction.order}
+                  </Link>
                   <p className="text-lg font-semibold text-burnt-orange font-inter">
                     ${transaction.amount}
                   </p>
                   <p
-                    className={`text-sm font-semibold px-2 py-1 rounded-md font-inter inline-block ${
-                      transaction.status === "completed"
+                    className={`text-sm font-semibold px-2 py-1 rounded-md font-inter inline-block ${transaction.status === "completed"
                         ? "bg-forest text-white"
                         : transaction.status === "failed" || transaction.status === "refunded"
-                        ? "bg-red-500 text-white"
-                        : "bg-beige text-forest"
-                    }`}
+                          ? "bg-red-500 text-white"
+                          : "bg-beige text-forest"
+                      }`}
                   >
                     {transaction.status.toUpperCase()}
                   </p>

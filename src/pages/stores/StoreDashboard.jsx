@@ -28,7 +28,7 @@ const StoreDashboard = () => {
 
   return (
     <div className="container mx-auto p-8 min-h-screen">
-      <h1 className="text-4xl text-forest mb-8 text-center">Store Dashboard</h1>
+      <h1 className="text-4xl text-forest mb-8 text-center">Dashboard</h1>
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

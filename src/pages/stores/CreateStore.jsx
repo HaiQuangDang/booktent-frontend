@@ -18,10 +18,8 @@ function CreateStore() {
   const fetchStore = async () => {
     try {
       const storeRes = await api.get(`/stores/mine/`);
-      if (storeRes.data.owner) { // check if the user is the owner of the store
-        setLoading(true);
-        alert("You already have a store.");
-        navigate(`/store/${storeRes.data.id}`);
+      if (storeRes.data.owner) {
+        navigate("/dashboard");
       }
     } catch (err) {
       setError("Store not found");

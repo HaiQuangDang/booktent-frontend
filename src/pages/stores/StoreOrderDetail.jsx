@@ -72,6 +72,8 @@ const StoreOrderDetail = () => {
 
     return (
         <div className="container mx-auto p-8 min-h-screen">
+            <h1 className="text-4xl text-forest mb-8 text-center">Store Order Details</h1>
+
             {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
             {!order && <p className="text-soft-gray font-inter text-center">Order not found.</p>}
             {order && (
