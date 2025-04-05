@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { ACCESS_TOKEN } from "../../constants";
 
 function BookDetail({ updateCartItemCount }) {
@@ -21,11 +19,12 @@ function BookDetail({ updateCartItemCount }) {
         try {
             const response = await api.get(`/books/book/${id}/`);
             setBook(response.data);
+            console.log(response.data);
         } catch (error) {
             console.log(error);
-            setErrorMessage(error.response?.data?.detail || "Failed to fetch book.")
+            setErrorMessage(error.response?.data?.detail || "Failed to fetch book.");
         }
-    }
+    };
 
     const checkIfInCart = async () => {
         if (localStorage.getItem(ACCESS_TOKEN)) {
@@ -41,9 +40,8 @@ function BookDetail({ updateCartItemCount }) {
     const handleAddToCart = async (bookId) => {
         try {
             if (!localStorage.getItem(ACCESS_TOKEN)) {
-                alert("My lovely friend, please login to add this item to cart.")
-            }
-            else {
+                alert("My lovely friend, please login to add this item to cart.");
+            } else {
                 const res = await api.post("/cart/", { book_id: bookId, quantity: 1 });
                 checkIfInCart();
                 updateCartItemCount();
@@ -53,12 +51,11 @@ function BookDetail({ updateCartItemCount }) {
             alert("Failed to add book to cart.");
         }
     };
+
     return (
         <div className="container mx-auto p-8 min-h-screen">
-            <h1 className="text-4xl text-forest mb-8 text-center">
-                Book Details
-            </h1>
-            {book && (
+            <h1 className="text-4xl text-forest mb-8 text-center">Book Details</h1>
+            {book ? (
                 <div className="bg-white shadow-md rounded-lg p-6 flex gap-6">
                     <div className="w-1/3 flex-shrink-0">
                         <img
@@ -77,36 +74,42 @@ function BookDetail({ updateCartItemCount }) {
                         </p>
                         <p className="text-soft-gray mb-2 font-inter">
                             Author:{" "}
-                            {book.author_names.map((name, index) => (
-                                <span key={book.authors[index]}>
-                                    <Link
-                                        to={`/author/${book.authors[index]}`}
-                                        className="text-forest hover:text-burnt-orange transition-colors"
-                                    >
-                                        {name}
-                                    </Link>
-                                    {index < book.author_names.length - 1 ? ", " : ""}
-                                </span>
-                            ))}
-
+                            {book.author_details && book.author_details.length > 0 ? (
+                                book.author_details.map((author, index) => (
+                                    <span key={author.id || index}>
+                                        <Link
+                                            to={`/author/${author.id}`}
+                                            className="text-forest hover:text-burnt-orange transition-colors"
+                                        >
+                                            {author.name}
+                                        </Link>
+                                        {index < book.author_details.length - 1 ? ", " : ""}
+                                    </span>
+                                ))
+                            ) : (
+                                "Unknown Author"
+                            )}
                         </p>
-
                         <p className="text-soft-gray mb-2 font-inter">
                             Published: <span className="text-forest">{book.published_year}</span>
                         </p>
                         <p className="text-soft-gray mb-2 font-inter">
                             Genres:{" "}
-                            {book.genre_names.map((name, index) => (
-                                <Link
-                                    key={index}
-                                    to={`/genre/${book.genres[index]}`}
-                                    className="text-forest hover:text-burnt-orange transition-colors"
-                                >
-                                    {name}
-                                </Link>
-                            )).reduce((prev, curr) => [prev, ", ", curr])}
+                            {book.genre_names && book.genres && book.genre_names.length > 0 ? (
+                                book.genre_names.map((name, index) => (
+                                    <Link
+                                        key={index}
+                                        to={`/genre/${book.genres[index]}`}
+                                        className="text-forest hover:text-burnt-orange transition-colors"
+                                    >
+                                        {name}
+                                        {index < book.genre_names.length - 1 ? ", " : ""}
+                                    </Link>
+                                ))
+                            ) : (
+                                "No Genres"
+                            )}
                         </p>
-
                         <p className="text-soft-gray mb-2 font-inter">
                             In stock: <span className="text-forest">{book.stock_quantity ? `${book.stock_quantity} books` : "Out of Stock"}</span>
                         </p>
@@ -137,6 +140,8 @@ function BookDetail({ updateCartItemCount }) {
                         )}
                     </div>
                 </div>
+            ) : (
+                !errorMessage && <p className="text-center text-soft-gray font-inter">Loading...</p>
             )}
             {errorMessage && <p className="text-red-500 mt-4 text-center font-inter">{errorMessage}</p>}
         </div>
