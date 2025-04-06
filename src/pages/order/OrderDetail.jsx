@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
-
+import { Link } from "react-router-dom";
 const OrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
@@ -55,6 +55,9 @@ const OrderDetail = () => {
             <p>Total: <span className="font-semibold text-burnt-orange">${order.total_price}</span></p>
             <p>Payment Method: <span className="font-semibold text-forest">{order.payment_method.toUpperCase()}</span></p>
             <p>Payment Status: <span className="font-semibold text-forest">{order.payment_status.toUpperCase()}</span></p>
+            <p>Delivery Address: <span className="font-semibold">{order.address}</span></p>
+            <p>Phone: <span className="font-semibold">{order.phone}</span></p>
+            <p>Store: <Link to={`/store/${order.store}`} className="font-semibold text-forest hover:text-burnt-orange transition-colors">{order.store_name}</Link></p>
           </div>
   
           <h3 className="mt-6 text-lg font-semibold text-forest font-inter">Items</h3>

@@ -11,6 +11,8 @@ const PlaceOrder = ({ updateCartItemCount }) => {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [paymentMethod, setPaymentMethod] = useState("");
+    const [address, setAddress] = useState("");
+    const [phone, setPhone] = useState("");
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -23,27 +25,44 @@ const PlaceOrder = ({ updateCartItemCount }) => {
                 setLoading(false);
             }
         };
+        const fetchUserDetails = async () => {
+            try {
+                const res = await api.get("/user/me/");
+                setAddress(res.data.profile?.address || "");
+                setPhone(res.data.profile?.phone_number || "");
+            } catch (error) {
+                console.error("Error fetching user details:", error);
+            }
+        }
+        fetchUserDetails();
         fetchCart();
     }, []);
 
     const handleConfirmOrder = async () => {
+        if (!address.trim() || !phone.trim()) {
+            alert("Please fill in both address and phone number.");
+            return;
+        }
+
         if (!paymentMethod) {
             alert("Please select a payment method.");
             return;
         }
 
-        const payload = { cart_item_ids: selectedItems, payment_method: paymentMethod };
+        const payload = {
+            cart_item_ids: selectedItems,
+            payment_method: paymentMethod,
+            address: address,
+            phone: phone,
+        };
 
         try {
             const res = await api.post("/orders/create/", payload);
             updateCartItemCount();
-
-            // Extract all order IDs
             const orderIds = res.data.map(order => order.id);
 
             if (paymentMethod === "online") {
                 const checkoutUrl = await createStripeCheckoutSession(orderIds);
-
                 if (checkoutUrl) {
                     window.location.href = checkoutUrl; // Redirect to Stripe
                 } else {
@@ -79,7 +98,7 @@ const PlaceOrder = ({ updateCartItemCount }) => {
                     ).map(([storeId, items]) => (
                         <div key={storeId} className="mb-6">
                             <h3 className="text-lg font-semibold text-forest mb-2 font-inter">
-                                Order from: {items[0].store_name}
+                                From Store: {items[0].store_name}
                             </h3>
                             {items.map(item => (
                                 <div key={item.id} className="p-4 bg-beige rounded-md mb-2">
@@ -94,6 +113,26 @@ const PlaceOrder = ({ updateCartItemCount }) => {
                             ))}
                         </div>
                     ))}
+
+                    <div className="mb-6">
+                        <h3 className="text-xl font-semibold text-forest mb-4 font-inter">Shipping Info</h3>
+                        <div className="space-y-4">
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                placeholder="Shipping Address"
+                                className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                            />
+                            <input
+                                type="text"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="Phone Number"
+                                className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                            />
+                        </div>
+                    </div>
 
                     <h3 className="text-xl font-semibold text-forest mb-4 font-inter">Choose Payment Method</h3>
                     <div className="grid grid-cols-2 gap-4">
