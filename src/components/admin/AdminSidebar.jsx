@@ -1,104 +1,41 @@
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const AdminSidebar = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    navigate("/logout");
-  };
+  const navItems = [
+    { path: "/admin", label: "📊 Dashboard" },
+    { path: "/admin/users", label: "👤 Manage Users" },
+    { path: "/admin/stores", label: "🏬 Manage Stores" },
+    { path: "/admin/books", label: "📚 Manage Books" },
+    { path: "/admin/orders", label: "📦 Manage Orders" },
+    { path: "/admin/transactions", label: "💰 Transactions" },
+    { path: "/admin/authors", label: "📖 Authors" },
+    { path: "/admin/genres", label: "🎭 Genres" },
+    { path: "/", label: "🏠 Home" },
+  ];
 
   return (
-    <aside className="w-64 bg-gray-900 text-white flex-shrink-0 sticky top-0 h-screen">
-      <div className="flex flex-col h-full p-4">
-        {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold">Admin Panel</h2>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1">
-          <Link
-            to="/"
-            className="block px-4 py-2 mb-4 text-center bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors"
-          >
-            🏠 Go to Main Page
-          </Link>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                to="/admin"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                📊 Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/users"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                👤 Manage Users
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/stores"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                🏬 Manage Stores
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/books"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                📚 Manage Books
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/orders"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                📦 Manage Orders
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/transactions"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                💰 Transactions
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/authors"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                📖 Authors
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/genres"
-                className="block px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                🎭 Genres
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="w-full px-4 py-2 mt-4 text-center bg-red-600 rounded-lg hover:bg-red-500 transition-colors"
-        >
-          🚪 Logout
-        </button>
+    <aside className="w-64 h-screen bg-white shadow-md fixed top-0 left-0 flex flex-col">
+      <div className="p-6 border-b border-soft-gray">
+        <h2 className="text-2xl text-forest font-playfair">Admin Sidebar</h2>
       </div>
+      <nav className="flex-1 p-4 space-y-2">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`block px-4 py-2 rounded-md font-inter text-soft-gray transition-colors duration-200 ${
+              location.pathname === item.path
+                ? "bg-forest text-white"
+                : "hover:bg-beige hover:text-forest"
+            }`}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
     </aside>
   );
 };

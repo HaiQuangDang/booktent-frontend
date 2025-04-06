@@ -49,13 +49,13 @@ import AdminGenres from "./pages/admin/AdminGenres";
 function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, updateCartItemCount }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
-  const isStoreRoute = location.pathname.startsWith("/dashboard") || 
-                      location.pathname.startsWith("/store/orders") || 
-                      location.pathname.startsWith("/store/transactions") || 
-                      location.pathname.startsWith("/store/books") || 
-                      location.pathname.startsWith("/store/setting") ||
-                      location.pathname.startsWith("/books/add") || 
-                      location.pathname.match(/^\/books\/\d+\/edit$/); // Matches /books/:id/edit
+  const isStoreRoute = location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/store/orders") ||
+    location.pathname.startsWith("/store/transactions") ||
+    location.pathname.startsWith("/store/books") ||
+    location.pathname.startsWith("/store/setting") ||
+    location.pathname.startsWith("/books/add") ||
+    location.pathname.match(/^\/books\/\d+\/edit$/); // Matches /books/:id/edit
 
   const isAuthenticated = () => !!localStorage.getItem(ACCESS_TOKEN);
 
@@ -229,95 +229,89 @@ function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, upd
         />
 
         {/* Admin Routes */}
-        <Route
-          path="/admin/*"
-          element={
-            <AdminLayout>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="users"
-                  element={
-                    <AdminRoute>
-                      <AdminUsers />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="stores"
-                  element={
-                    <AdminRoute>
-                      <AdminStores />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="books"
-                  element={
-                    <AdminRoute>
-                      <AdminBooks />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="orders"
-                  element={
-                    <AdminRoute>
-                      <AdminOrders />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="orders/:id"
-                  element={
-                    <AdminRoute>
-                      <AdminOrderDetail />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="transactions"
-                  element={
-                    <AdminRoute>
-                      <AdminTransactions />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="transactions/:id"
-                  element={
-                    <AdminRoute>
-                      <AdminTransactionDetail />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="authors"
-                  element={
-                    <AdminRoute>
-                      <AdminAuthors />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="genres"
-                  element={
-                    <AdminRoute>
-                      <AdminGenres />
-                    </AdminRoute>
-                  }
-                />
-              </Routes>
-            </AdminLayout>
-          }
-        />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route
+            index
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <AdminRoute>
+                <AdminUsers />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="stores"
+            element={
+              <AdminRoute>
+                <AdminStores />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="books"
+            element={
+              <AdminRoute>
+                <AdminBooks />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <AdminRoute>
+                <AdminOrders />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="orders/:id"
+            element={
+              <AdminRoute>
+                <AdminOrderDetail />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="transactions"
+            element={
+              <AdminRoute>
+                <AdminTransactions />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="transactions/:id"
+            element={
+              <AdminRoute>
+                <AdminTransactionDetail />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="authors"
+            element={
+              <AdminRoute>
+                <AdminAuthors />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="genres"
+            element={
+              <AdminRoute>
+                <AdminGenres />
+              </AdminRoute>
+            }
+          />
+        </Route>
+
 
         <Route path="*" element={<NotFound />} />
       </Routes>

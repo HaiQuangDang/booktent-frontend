@@ -1,136 +1,143 @@
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import api from "../../api"
-
+import api from "../../api";
 
 const AdminDashboard = () => {
-    const [stats, setStats] = useState(null);
-    const [recentActivity, setRecentActivity] = useState(null);
-    const [earnings, setEarnings] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [recentActivity, setRecentActivity] = useState(null);
+  const [earnings, setEarnings] = useState(null);
 
-    useEffect(() => {
-        fetchAdminStats();
-        fetchRecentActivity();
-        fetchEarnings();
-    }, []);
+  useEffect(() => {
+    fetchAdminStats();
+    fetchRecentActivity();
+    fetchEarnings();
+  }, []);
 
-    const fetchAdminStats = async () => {
-        try {
-            const res = await api.get("/admin/stats/");
-            setStats(res.data);
-        } catch (error) {
-            console.error("Error fetching stats", error);
-        }
-    };
+  const fetchAdminStats = async () => {
+    try {
+      const res = await api.get("/admin/stats/");
+      setStats(res.data);
+    } catch (error) {
+      console.error("Error fetching stats", error);
+    }
+  };
 
-    const fetchRecentActivity = async () => {
-        try {
-            const res = await api.get("/admin/recent-activity/");
-            setRecentActivity(res.data);
-        } catch (error) {
-            console.error("Error fetching recent activity", error);
-        }
-    };
+  const fetchRecentActivity = async () => {
+    try {
+      const res = await api.get("/admin/recent-activity/");
+      setRecentActivity(res.data);
+    } catch (error) {
+      console.error("Error fetching recent activity", error);
+    }
+  };
 
-    const fetchEarnings = async () => {
-        try {
-            const res = await api.get("/admin/earnings/");
-            setEarnings(res.data.earnings_per_month);
-        } catch (error) {
-            console.error("Error fetching earnings", error);
-        }
-    };
+  const fetchEarnings = async () => {
+    try {
+      const res = await api.get("/admin/earnings/");
+      setEarnings(res.data.earnings_per_month);
+    } catch (error) {
+      console.error("Error fetching earnings", error);
+    }
+  };
 
-    if (!stats || !recentActivity || !earnings) return <p>Loading...</p>;
+  if (!stats || !recentActivity || !earnings) return <p className="text-center text-forest font-inter">Loading...</p>;
 
-    return (
-        
-            <div className="flex-1 p-6">
-                <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-                <p className="text-gray-600">Overview of the platform</p>
+  return (
+    <div className="flex-1 p-6 bg-beige min-h-screen">
+      <h1 className="text-3xl font-playfair text-forest mb-2">Admin Dashboard</h1>
+      <p className="text-soft-gray font-inter mb-6">Overview of the platform</p>
 
-                {/* Stats and other content go here */}
-                <div className="p-6 space-y-6">
-                    {/* Overview Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        <div className="bg-white shadow-lg rounded-lg p-4">
-                            <p className="text-lg font-bold">{stats.total_users}</p>
-                            <p className="text-sm text-gray-500">Total Users</p>
-                        </div>
-                        <div className="bg-white shadow-lg rounded-lg p-4">
-                            <p className="text-lg font-bold">{stats.total_stores}</p>
-                            <p className="text-sm text-gray-500">Total Stores</p>
-                        </div>
-                        <div className="bg-white shadow-lg rounded-lg p-4">
-                            <p className="text-lg font-bold">{stats.total_books}</p>
-                            <p className="text-sm text-gray-500">Total Books</p>
-                        </div>
-                        <div className="bg-white shadow-lg rounded-lg p-4">
-                            <p className="text-lg font-bold">{stats.total_orders}</p>
-                            <p className="text-sm text-gray-500">Total Orders</p>
-                        </div>
-                        <div className="bg-white shadow-lg rounded-lg p-4">
-                            <p className="text-lg font-bold">${stats.total_earnings}</p>
-                            <p className="text-sm text-gray-500">Total Earnings</p>
-                        </div>
-                    </div>
-
-
-                    {/* Recent Activity Table */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-                        <div className="grid grid-cols-3 gap-4">
-                            <div>
-                                <h3 className="text-lg font-medium">Pending Stores</h3>
-                                <ul className="text-sm">
-                                    {recentActivity.pending_stores.map((store) => (
-                                        <li key={store.id} className="border-b py-2">
-                                            {store.name} - {store.owner__username}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium">Pending Books</h3>
-                                <ul className="text-sm">
-                                    {recentActivity.pending_books.map((book) => (
-                                        <li key={book.id} className="border-b py-2">
-                                            {book.title} - {book.store__name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium">Recent Orders</h3>
-                                <ul className="text-sm">
-                                    {recentActivity.recent_orders.map((order) => (
-                                        <li key={order.id} className="border-b py-2">
-                                            {order.user__username} - ${order.total_price}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Earnings Chart */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h2 className="text-xl font-semibold mb-4">Earnings (Last 6 Months)</h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={earnings}>
-                                <XAxis
-                                    dataKey="month"
-                                    tickFormatter={(date) => new Date(date).toISOString().split("T")[0]}
-                                />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="total_earnings" fill="#4F46E5" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
+      <div className="space-y-8">
+        {/* Overview Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {[
+            { label: "Total Users", value: stats.total_users },
+            { label: "Total Stores", value: stats.total_stores },
+            { label: "Total Books", value: stats.total_books },
+            { label: "Total Orders", value: stats.total_orders },
+            { label: "Total Earnings", value: `$${stats.total_earnings}` },
+          ].map((card, idx) => (
+            <div
+              key={idx}
+              className="bg-white shadow-sm hover:shadow-md transition-shadow rounded-2xl p-4"
+            >
+              <p className="text-xl font-semibold text-burnt-orange">{card.value}</p>
+              <p className="text-sm text-forest font-inter">{card.label}</p>
             </div>
-    );
+          ))}
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h2 className="text-2xl font-playfair text-forest mb-6">Recent Activity</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Pending Stores */}
+            <div>
+              <h3 className="text-lg font-inter text-forest mb-2">Pending Stores</h3>
+              <ul className="space-y-2 text-sm text-soft-gray font-inter">
+                {recentActivity.pending_stores.map((store) => (
+                  <li key={store.id} className="border-b border-soft-gray/50 py-1">
+                    <span className="font-medium text-forest">{store.name}</span> – {store.owner__username}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Pending Books */}
+            <div>
+              <h3 className="text-lg font-inter text-forest mb-2">Pending Books</h3>
+              <ul className="space-y-2 text-sm text-soft-gray font-inter">
+                {recentActivity.pending_books.map((book) => (
+                  <li key={book.id} className="border-b border-soft-gray/50 py-1">
+                    <span className="font-medium text-forest">{book.title}</span> – {book.store__name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Recent Orders */}
+            <div>
+              <h3 className="text-lg font-inter text-forest mb-2">Recent Orders</h3>
+              <ul className="space-y-2 text-sm text-soft-gray font-inter">
+                {recentActivity.recent_orders.map((order) => (
+                  <li key={order.id} className="border-b border-soft-gray/50 py-1">
+                    {order.user__username} – <span className="text-burnt-orange">${order.total_price}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Earnings Chart */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h2 className="text-2xl font-playfair text-forest mb-6">Earnings (Last 6 Months)</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={earnings}>
+              <XAxis
+                dataKey="month"
+                tickFormatter={(date) =>
+                  new Date(date).toLocaleString("default", { month: "short" })
+                }
+                tick={{ fill: "#6C584C", fontSize: 12, fontFamily: "Inter" }}
+              />
+              <YAxis tick={{ fill: "#6C584C", fontSize: 12, fontFamily: "Inter" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#FFFFFF",
+                  border: "1px solid #DCD8C6",
+                  borderRadius: "8px",
+                  color: "#6C584C",
+                  fontFamily: "Inter",
+                }}
+              />
+              <Bar dataKey="total_earnings" fill="#A37B5D" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AdminDashboard;

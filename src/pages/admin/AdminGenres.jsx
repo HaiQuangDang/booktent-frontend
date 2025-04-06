@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import AdminSidebar from "../../components/admin/AdminSidebar";
 import GenreForm from "../../components/admin/GenreForm";
 import { Link } from "react-router-dom";
 
@@ -9,8 +8,6 @@ function AdminGenres() {
     const [genres, setGenres] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedGenre, setSelectedGenre] = useState(null);
-    const [successMessage, setSuccessMessage] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         fetchGenres();
@@ -29,32 +26,28 @@ function AdminGenres() {
 
     const handleSave = async (genreData) => {
         try {
-            if (selectedGenre && selectedGenre.id) {  // Check if it has an `id` before updating
+            if (selectedGenre && selectedGenre.id) {  // Update existing genre
                 await api.put(`/books/genres/${selectedGenre.id}/`, genreData);
-                setSuccessMessage("Genre updated successfully!");
-            } else {
-                await api.post("/books/genres/", genreData);  // If no `id`, it's a new genre
-                setSuccessMessage("Genre added successfully!");
+                alert("Genre updated successfully!");
+            } else {  // Add new genre
+                await api.post("/books/genres/", genreData);
+                alert("Genre added successfully!");
             }
-            setErrorMessage("");
             fetchGenres(); // Refresh list
         } catch (error) {
-            setErrorMessage("Failed to save genre. Please try again.");
-            setSuccessMessage("");
+            alert("Failed to save genre. Please try again.");
         }
-        setSelectedGenre(null);
+        setSelectedGenre(null);  // Close the modal after saving
     };
-    
+
     const handleDelete = async (genreId) => {
         if (!window.confirm("Are you sure you want to delete this genre?")) return;
         try {
             await api.delete(`/books/genres/${genreId}/`);
-            setSuccessMessage("Genre deleted successfully!");
-            setErrorMessage("");
+            alert("Genre deleted successfully!");
             fetchGenres(); // Refresh list
         } catch (error) {
-            setErrorMessage("Failed to delete genre.");
-            setSuccessMessage("");
+            alert("Failed to delete genre.");
         }
     };
 
@@ -62,46 +55,58 @@ function AdminGenres() {
 
     return (
         <div className="flex">
-            <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-                <h2 className="text-2xl font-semibold mb-4">Manage Genres</h2>
+            <div className="flex-1 p-6 bg-beige min-h-screen">
+                <h2 className="text-3xl font-playfair text-forest mb-6">Manage Genres</h2>
 
-                {successMessage && <div className="bg-green-100 text-green-800 p-2 rounded">{successMessage}</div>}
-                {errorMessage && <div className="bg-red-100 text-red-800 p-2 rounded">{errorMessage}</div>}
-
-                <button onClick={() => setSelectedGenre({})} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">
+                <button
+                    onClick={() => setSelectedGenre({})}
+                    className="bg-burnt-orange text-white px-4 py-2 rounded-md hover:bg-burnt-orange/80 transition-colors font-inter mb-6"
+                >
                     + Add Genre
                 </button>
 
                 {selectedGenre && (
                     <GenreForm
                         genre={selectedGenre}
-                        onSave={handleSave}
-                        onCancel={() => setSelectedGenre(null)}
+                        onSubmit={handleSave}  // Use onSubmit to handle both add and update
+                        onClose={() => setSelectedGenre(null)}  // Close the modal after submit or cancel
                     />
                 )}
 
-                <div className="bg-white p-4 rounded-xl shadow-md">
+                <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="bg-gray-200">
-                                <th className="p-3 text-left">Name</th>
-                                <th className="p-3 text-left">Description</th>
-                                <th className="p-3 text-left">Actions</th>
+                            <tr className="bg-forest/10">
+                                <th className="p-4 text-left text-forest font-inter font-semibold">Name</th>
+                                <th className="p-4 text-left text-forest font-inter font-semibold">Description</th>
+                                <th className="p-4 text-left text-forest font-inter font-semibold">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {genres.map(genre => (
-                                <tr key={genre.id} className="border-t">
-                                    <td className="p-3">
-                                        
-                                        <Link to={`/genre/${genre.id}`} className="text-blue-500 hover:underline">
-                                        {genre.name}
+                            {genres.map((genre) => (
+                                <tr key={genre.id} className="border-b border-soft-gray/50 hover:bg-forest/5 transition-colors">
+                                    <td className="p-4">
+                                        <Link
+                                            to={`/genre/${genre.id}`}
+                                            className="text-burnt-orange hover:underline font-inter"
+                                        >
+                                            {genre.name}
                                         </Link>
                                     </td>
-                                    <td className="p-3">{genre.description}</td>
-                                    <td className="p-3">
-                                        <button onClick={() => setSelectedGenre(genre)} className="text-blue-500 mr-2">Edit</button>
-                                        <button onClick={() => handleDelete(genre.id)} className="text-red-500">Delete</button>
+                                    <td className="p-4 text-soft-gray font-inter">{genre.description}</td>
+                                    <td className="p-4">
+                                        <button
+                                            className="text-forest hover:underline font-inter mr-4"
+                                            onClick={() => setSelectedGenre(genre)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="text-red-500 hover:underline font-inter"
+                                            onClick={() => handleDelete(genre.id)}
+                                        >
+                                            Delete
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
