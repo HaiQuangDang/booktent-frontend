@@ -9,26 +9,30 @@ const Setting = () => {
         profile: {
             avatar: "",
             address: "",
+            phone_number: "",
         },
     });
-    const [preview, setPreview] = useState(""); // Avatar preview
-    const [selectedFile, setSelectedFile] = useState(null); // Store selected image file
+    const [userId, setUserId] = useState(null);
+    const [preview, setPreview] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
-    const navigate = useNavigate()
-    const [errorMessage, setErrorMessage] = useState("");
-    const [errorUsername, setErrorUsername] = useState("");
-    const [errorPassword, setErrorPassword] = useState("");
-    const [errorEmail, setErrorEmail] = useState("");
+    const [errors, setErrors] = useState({});
+    const [deleteConfirmName, setDeleteConfirmName] = useState(""); // For delete confirmation
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Toggle delete confirmation
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const userRes = await api.get("/user/me/");
                 setUser(userRes.data);
+                setUserId(userRes.data.id);
                 setPreview(userRes.data.profile.avatar || "");
             } catch (error) {
                 console.error("Error fetching user:", error);
+                setErrors({ general: "Failed to load profile." });
             } finally {
                 setLoading(false);
             }
@@ -39,10 +43,10 @@ const Setting = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name === "address") {
+        if (["address", "phone_number"].includes(name)) {
             setUser((prev) => ({
                 ...prev,
-                profile: { ...prev.profile, address: value },
+                profile: { ...prev.profile, [name]: value },
             }));
         } else {
             setUser((prev) => ({ ...prev, [name]: value }));
@@ -53,62 +57,81 @@ const Setting = () => {
         const file = e.target.files[0];
         if (file) {
             setSelectedFile(file);
-            setPreview(URL.createObjectURL(file)); // Show preview
+            setPreview(URL.createObjectURL(file));
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submission prevented"); // Debug
-        setErrorMessage("");
-        setErrorUsername("");
-        setErrorPassword("");
-        setErrorEmail("");
+        setErrors({});
+        setUpdating(true);
 
         const formData = new FormData();
         formData.append("username", user.username);
         formData.append("email", user.email);
         formData.append("profile.address", user.profile.address || "");
-
+        formData.append("profile.phone_number", user.profile.phone_number || "");
         if (selectedFile) {
-            formData.append("profile.avatar", selectedFile); // Upload image only if changed
+            formData.append("profile.avatar", selectedFile);
         }
 
         try {
             await api.put("/user/update/", formData, {
-                headers: { "Content-Type": "multipart/form-data" }, // Required for file uploads
+                headers: { "Content-Type": "multipart/form-data" },
             });
             alert("Profile updated successfully!");
-            navigate("/profile")
+            navigate("/profile");
         } catch (error) {
-            console.log(error)
-            console.error("Error details:", error.response?.data); // Log the exact response
-            if (error.response?.data) {
-                const data = error.response.data;
-                if (data.username) setErrorUsername(data.username[0]);
-                if (data.email) setErrorEmail(data.email[0]);
-                else if (data.detail) {
-                    setErrorMessage(data.detail); // This should catch "No active account found..."
-                    console.log("Error message set to:", data.detail);
-                } else {
-                    setErrorMessage("Something went wrong. Please try again.");
-                }
-            } else {
-                setErrorMessage("Network error. Please check your connection.");
-            }
+            console.log("Update error:", error.response?.data);
+            const data = error.response?.data || {};
+            setErrors({
+                username: data.username?.[0],
+                email: data.email?.[0],
+                general: data.detail || "Something went wrong. Please try again.",
+            });
         } finally {
-            setLoading(false);
+            setUpdating(false);
         }
     };
 
+    const handleDelete = async () => {
+        if (deleteConfirmName !== user.username) {
+            setErrors({ general: `Please type "${user.username}" to confirm deletion.` });
+            return;
+        }
+
+        setUpdating(true);
+        setErrors({});
+
+        try {
+            await api.delete(`/user/delete/${userId}/`); // Adjust endpoint if needed
+            alert("Account deleted successfully!");
+            navigate("/logout");
+            window.location.reload();
+        } catch (error) {
+            console.error("Error deleting account:", error);
+            setErrors({ general: error.response?.data?.detail || "Failed to delete account." });
+        } finally {
+            setUpdating(false);
+            setShowDeleteConfirm(false);
+            setDeleteConfirmName("");
+        }
+    };
+
+    if (loading) return <div className="text-center text-forest font-inter">Loading...</div>;
+    if (updating) return <div className="text-center text-forest font-inter">Processing...</div>;
+
     return (
         <div className="container mx-auto p-8 min-h-screen">
-            <h1 className="text-4xl text-forest mb-8 text-center font-inter">Account Settings</h1>
+            <h1 className="text-4xl text-forest mb-8 text-center font-playfair">Profile Settings</h1>
             <div className="bg-white shadow-md rounded-lg p-6 max-w-md mx-auto">
-                {errorMessage && <p className="text-red-500 mb-4 text-center font-inter">{errorMessage}</p>}
+                {errors.general && !showDeleteConfirm && (
+                    <p className="text-red-500 mb-4 text-center font-inter">{errors.general}</p>
+                )}
+
                 <div className="flex flex-col items-center mb-6">
                     <img
-                        src={preview || user.profile?.avatar || "/defaultuser.jpg"}
+                        src={preview || "/defaultuser.jpg"}
                         alt="Profile Avatar"
                         className="w-24 h-24 rounded-full mb-4 border-2 border-forest object-cover transition-transform hover:scale-105"
                     />
@@ -122,6 +145,7 @@ const Setting = () => {
                         />
                     </label>
                 </div>
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <input
@@ -130,9 +154,9 @@ const Setting = () => {
                             value={user.username}
                             onChange={handleChange}
                             placeholder="Username"
-                            className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                            className="w-full p-3 border border-soft-gray rounded-md font-inter text-soft-gray focus:outline-none focus:ring-2 focus:ring-forest"
                         />
-                        {errorUsername && <p className="text-red-500 text-sm mt-1 font-inter">{errorUsername}</p>}
+                        {errors.username && <p className="text-red-500 text-sm mt-1 font-inter">{errors.username}</p>}
                     </div>
                     <div>
                         <input
@@ -141,9 +165,9 @@ const Setting = () => {
                             value={user.email}
                             onChange={handleChange}
                             placeholder="Email"
-                            className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                            className="w-full p-3 border border-soft-gray rounded-md font-inter text-soft-gray focus:outline-none focus:ring-2 focus:ring-forest"
                         />
-                        {errorEmail && <p className="text-red-500 text-sm mt-1 font-inter">{errorEmail}</p>}
+                        {errors.email && <p className="text-red-500 text-sm mt-1 font-inter">{errors.email}</p>}
                     </div>
                     <div>
                         <textarea
@@ -151,20 +175,72 @@ const Setting = () => {
                             value={user.profile?.address ?? ""}
                             onChange={handleChange}
                             placeholder="Address"
-                            className="w-full p-3 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
+                            className="w-full p-3 border border-soft-gray rounded-md font-inter text-soft-gray focus:outline-none focus:ring-2 focus:ring-forest"
                         />
                     </div>
-                    <button
-                        type="submit"
-                        className="w-full p-3 bg-forest text-white rounded-md hover:bg-burnt-orange transition-colors font-inter"
-                    >
-                        Update Profile
-                    </button>
+                    <div>
+                        <input
+                            type="text"
+                            name="phone_number"
+                            value={user.profile?.phone_number ?? ""}
+                            onChange={handleChange}
+                            placeholder="Phone Number"
+                            className="w-full p-3 border border-soft-gray rounded-md font-inter text-soft-gray focus:outline-none focus:ring-2 focus:ring-forest"
+                        />
+                    </div>
+
+                    {showDeleteConfirm && (
+                        <div className="space-y-2">
+                            <label htmlFor="delete_confirm" className="block text-red-500 font-inter mb-1">
+                                Type "{user.username}" to confirm deletion
+                            </label>
+                            <input
+                                id="delete_confirm"
+                                type="text"
+                                value={deleteConfirmName}
+                                onChange={(e) => setDeleteConfirmName(e.target.value)}
+                                placeholder={user.username}
+                                className="w-full p-3 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-soft-gray font-inter"
+                            />
+                            {errors.general && <p className="text-red-500 text-sm font-inter">{errors.general}</p>}
+                        </div>
+                    )}
+
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            type="button"
+                            onClick={() => { setShowDeleteConfirm(!showDeleteConfirm); setDeleteConfirmName(""); }}
+                            className="flex-1 p-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-inter"
+                            disabled={updating}
+                        >
+                            {showDeleteConfirm ? "Cancel" : "Delete Account"}
+                        </button>
+                        {showDeleteConfirm && (
+                            <button
+                                type="button"
+                                onClick={handleDelete}
+                                className={`flex-1 p-3 rounded-md transition-colors font-inter ${deleteConfirmName !== user.username || updating
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        : "bg-red-700 text-white hover:bg-red-800"
+                                    }`}
+                                disabled={updating || deleteConfirmName !== user.username}
+                            >
+                                {updating ? "Deleting..." : "Confirm Delete"}
+                            </button>
+                        )}
+                        <button
+                            type="submit"
+                            className="flex-1 p-3 bg-forest text-white rounded-md hover:bg-burnt-orange transition-colors font-inter"
+                            disabled={updating}
+                        >
+                            Update Profile
+                        </button>
+
+                    </div>
                 </form>
             </div>
         </div>
     );
-
 };
 
 export default Setting;

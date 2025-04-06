@@ -32,7 +32,6 @@ function CreateStore() {
 
   return (
     <ProtectedRoute>
-      <h1>Create Your Store</h1>
       <StoreForm />
     </ProtectedRoute>
   );

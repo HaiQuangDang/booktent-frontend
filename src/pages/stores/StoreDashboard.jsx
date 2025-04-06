@@ -28,9 +28,10 @@ const StoreDashboard = () => {
 
   return (
     <div className="container mx-auto p-8 min-h-screen">
-      <h1 className="text-4xl text-forest mb-8 text-center">Dashboard</h1>
-
-      {/* Overview Stats */}
+      <h1 className="text-4xl text-forest mb-2 text-center">{dashboardData.store_name}</h1>
+      <p className="text-soft-gray font-inter text-center mb-4">Status: <span className="text-forest">{dashboardData.store_status.toUpperCase()}</span></p>
+      <p className="text-lg text-forest font-inter text-center mb-8">Welcome to your store dashboard!</p>
+  
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center transition-all hover:shadow-lg">
           <h2 className="text-lg font-semibold text-forest font-inter">Total Orders</h2>
@@ -54,7 +55,7 @@ const StoreDashboard = () => {
         </div>
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center transition-all hover:shadow-lg">
           <h2 className="text-lg font-semibold text-forest font-inter">Books in Stock</h2>
-          <p className="text-3xl text-burnt-orange font-inter my-2">{dashboardData.total_books || "N/A"}</p>
+          <p className="text-3xl text-burnt-orange font-inter my-2">{dashboardData.total_books}</p>
           <Link
             to="/store/books"
             className="bg-forest text-white px-4 py-1 rounded-md hover:bg-burnt-orange transition-colors font-inter"

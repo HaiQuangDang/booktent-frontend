@@ -28,13 +28,12 @@ const AddBookPage = () => {
             const storeRes = await api.get(`/stores/mine/`);
             if (!storeRes.data || storeRes.data.detail) {
                 setError("You need to own a store to add books.");
-                return;
+                window.location.href = "/store/create";
             }
             if (storeRes.data.status !== "active") {
-                setError("Only store owners with an active store can add books.");
                 setIsStoreOwner(true);
-                alert("Your store is not active. You will be redirected.");
-                navigate(`/store/${storeRes.data.id}`);
+                setError("Your store is not active yet.");
+                return;
             }
             setIsStoreOwner(true);
             setFormData((prev) => ({ ...prev, store: storeRes.data.id }));
@@ -112,15 +111,14 @@ const AddBookPage = () => {
     };
 
     if (loading) return <div className="text-center text-soft-gray font-inter">Loading...</div>;
-    if (!isStoreOwner) return (
-        <div className="container mx-auto p-8 text-center">
-            <p className="text-red-500 font-inter mb-4">{error}</p>
-            <Link to={"/stores/create"}>
-                <button className="btn-primary">Create a Store?</button>
-            </Link>
-        </div>
-    );
-    if (error && isStoreOwner) return <div className="text-red-500 text-center font-inter">{error}</div>;
+
+    if (error && isStoreOwner)
+        return (
+            <div className="container mx-auto p-8 min-h-screen">
+                <h1 className="text-4xl text-forest mb-8 text-center font-playfair">Add a New Book</h1>
+                <p className="text-red-500 text-center font-inter">{error}</p>
+            </div>
+        );
 
     return (
         <ProtectedRoute>

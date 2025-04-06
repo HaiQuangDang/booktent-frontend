@@ -40,6 +40,7 @@ const Profile = () => {
             <p><strong className="text-forest">Username:</strong> {user.username}</p>
             <p><strong className="text-forest">Email:</strong> {user.email}</p>
             <p><strong className="text-forest">Address:</strong> {user.profile?.address || "Not set"}</p>
+            <p><strong className="text-forest">Phone:</strong> {user.profile?.phone_number || "Not set"}</p> {/* ✅ New Line */}
           </div>
         </div>
       </div>

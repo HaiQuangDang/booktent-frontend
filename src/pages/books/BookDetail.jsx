@@ -40,7 +40,8 @@ function BookDetail({ updateCartItemCount }) {
     const handleAddToCart = async (bookId) => {
         try {
             if (!localStorage.getItem(ACCESS_TOKEN)) {
-                alert("My lovely friend, please login to add this item to cart.");
+               window.confirm("Dear my lovely friend, you need to log in to add items to your cart. Do you want to log in?") && navigate("/login");
+                return;
             } else {
                 const res = await api.post("/cart/", { book_id: bookId, quantity: 1 });
                 checkIfInCart();
