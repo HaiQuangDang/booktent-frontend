@@ -120,7 +120,7 @@ function EditStorePage() {
               href={`/store/${id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-forest px-3 py-1.5 rounded-md bg-soft-gray hover:bg-beige transition-colors font-inter shadow-sm"
+              className="inline-flex items-center gap-1 text-sm text-forest px-3 py-1.5 rounded-md bg-gray-50 hover:bg-beige transition-colors font-inter shadow-sm"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

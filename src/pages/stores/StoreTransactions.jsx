@@ -8,6 +8,10 @@ const StoreTransactions = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
   const statusOptions = ["pending", "completed", "failed", "refunded"];
   const paymentOptions = ["cod", "online"];
 
@@ -15,12 +19,16 @@ const StoreTransactions = () => {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
-        const params = {};
-        if (statusFilter) params.status = statusFilter;
-        if (paymentFilter) params.payment_method = paymentFilter;
+        const params = {
+          page,
+          page_size: pageSize,
+          ...(statusFilter && { status: statusFilter }),
+          ...(paymentFilter && { payment_method: paymentFilter }),
+        };
 
         const response = await api.get("/transactions/", { params });
-        setTransactions(response.data);
+        setTransactions(response.data.results || []);
+        setTotalPages(Math.ceil(response.data.count / pageSize));
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
@@ -29,7 +37,7 @@ const StoreTransactions = () => {
     };
 
     fetchTransactions();
-  }, [statusFilter, paymentFilter]);
+  }, [statusFilter, paymentFilter, page, pageSize]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -49,7 +57,10 @@ const StoreTransactions = () => {
           <label className="block text-sm font-medium text-forest font-inter mb-1">Status</label>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
             className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
           >
             <option value="">All Statuses</option>
@@ -64,7 +75,10 @@ const StoreTransactions = () => {
           <label className="block text-sm font-medium text-forest font-inter mb-1">Payment Method</label>
           <select
             value={paymentFilter}
-            onChange={(e) => setPaymentFilter(e.target.value)}
+            onChange={(e) => {
+              setPaymentFilter(e.target.value);
+              setPage(1);
+            }}
             className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
           >
             <option value="">All Methods</option>
@@ -105,7 +119,7 @@ const StoreTransactions = () => {
                   </p>
                 </div>
                 <div className="text-right space-y-2">
-                <Link
+                  <Link
                     to={`/store/orders/${transaction.order}`}
                     className="text-forest hover:text-burnt-orange font-inter transition-colors"
                   >
@@ -118,8 +132,8 @@ const StoreTransactions = () => {
                     className={`text-sm font-semibold px-2 py-1 rounded-md font-inter inline-block ${transaction.status === "completed"
                         ? "bg-forest text-white"
                         : transaction.status === "failed" || transaction.status === "refunded"
-                          ? "bg-red-500 text-white"
-                          : "bg-beige text-forest"
+                        ? "bg-red-500 text-white"
+                        : "bg-beige text-forest"
                       }`}
                   >
                     {transaction.status.toUpperCase()}
@@ -134,6 +148,29 @@ const StoreTransactions = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="flex justify-between items-center max-w-4xl mx-auto mt-6">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className="bg-forest text-white px-3 py-1 rounded-md hover:bg-forest/80 disabled:bg-gray-300"
+          >
+            Previous
+          </button>
+          <span className="text-forest font-inter">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+            className="bg-forest text-white px-3 py-1 rounded-md hover:bg-forest/80 disabled:bg-gray-300"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

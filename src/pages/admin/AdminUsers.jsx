@@ -1,4 +1,3 @@
-// src/pages/admin/AdminUsers.jsx
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { useEffect, useState } from "react";
 import api from "../../api";
@@ -6,18 +5,28 @@ import { USER } from "../../constants";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers("/user/users/");
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (url) => {
     try {
-      const res = await api.get("/user/users/");
+      setLoading(true);
+      const res = await api.get(url);
       const admin = JSON.parse(localStorage.getItem(USER));
-      setUsers(res.data.filter((user) => user.id !== admin.id));
+      const filteredUsers = res.data.results.filter((user) => user.id !== admin.id);
+
+      setUsers(filteredUsers);
+      setNextPage(res.data.next);
+      setPrevPage(res.data.previous);
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,6 +78,29 @@ const AdminUsers = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center p-4">
+            <button
+              disabled={!prevPage}
+              onClick={() => fetchUsers(prevPage)}
+              className={`px-4 py-2 rounded-md font-inter ${
+                prevPage ? "bg-forest text-white hover:bg-forest/90" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
+            >
+              Previous
+            </button>
+
+            <button
+              disabled={!nextPage}
+              onClick={() => fetchUsers(nextPage)}
+              className={`px-4 py-2 rounded-md font-inter ${
+                nextPage ? "bg-forest text-white hover:bg-forest/90" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ const AdminSidebar = () => {
     { path: "/admin/transactions", label: "💰 Transactions" },
     { path: "/admin/authors", label: "📖 Authors" },
     { path: "/admin/genres", label: "🎭 Genres" },
+    { path: "/admin/genre-requests", label: "📝 Genre Requests" },
     { path: "/", label: "🏠 Home" },
   ];
 

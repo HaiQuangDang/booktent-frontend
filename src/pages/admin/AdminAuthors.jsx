@@ -61,12 +61,21 @@ function AdminAuthors() {
     <div className="flex">
       <div className="flex-1 p-6 bg-beige min-h-screen">
         <h2 className="text-3xl font-playfair text-forest mb-6">Manage Authors</h2>
+        {!authors.length && (
+          <div className="text-center text-soft-gray font-inter">
+            No authors found. Please add an author.
+          </div>
+        )}
+       
+         
+        
         <button
           className="bg-burnt-orange text-white px-4 py-2 rounded-md hover:bg-burnt-orange/80 transition-colors font-inter mb-6"
           onClick={() => setIsFormOpen(true)}
         >
           + Add Author
         </button>
+        { authors.length > 0 && (
         <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
           <table className="w-full border-collapse">
             <thead>
@@ -109,10 +118,12 @@ function AdminAuthors() {
             </tbody>
           </table>
         </div>
+        )}
         {isFormOpen && (
           <AuthorForm author={selectedAuthor} onClose={handleFormClose} onSubmit={handleFormSubmit} />
         )}
       </div>
+    
     </div>
   );
 }

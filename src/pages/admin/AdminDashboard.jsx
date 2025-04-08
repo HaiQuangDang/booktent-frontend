@@ -6,11 +6,15 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [recentActivity, setRecentActivity] = useState(null);
   const [earnings, setEarnings] = useState(null);
+  const [recentAuthors, setRecentAuthors] = useState(null);
+  const [genreRequests, setGenreRequests] = useState(null);
 
   useEffect(() => {
     fetchAdminStats();
     fetchRecentActivity();
     fetchEarnings();
+    fetchRecentAuthors(); // Fetch recent authors
+    fetchGenreRequests(); // Fetch genre requests
   }, []);
 
   const fetchAdminStats = async () => {
@@ -40,7 +44,26 @@ const AdminDashboard = () => {
     }
   };
 
-  if (!stats || !recentActivity || !earnings) return <p className="text-center text-forest font-inter">Loading...</p>;
+  const fetchRecentAuthors = async () => {
+    try {
+      const res = await api.get("/admin/recent-authors/");
+      setRecentAuthors(res.data.recent_authors);
+    } catch (error) {
+      console.error("Error fetching recent authors", error);
+    }
+  };
+
+  const fetchGenreRequests = async () => {
+    try {
+      const res = await api.get("/admin/recent-genre-requests/");
+      setGenreRequests(res.data.genre_requests);
+    } catch (error) {
+      console.error("Error fetching genre requests", error);
+    }
+  };
+
+  if (!stats || !recentActivity || !earnings || !recentAuthors || !genreRequests)
+    return <p className="text-center text-forest font-inter">Loading...</p>;
 
   return (
     <div className="flex-1 p-6 bg-beige min-h-screen">
@@ -107,6 +130,30 @@ const AdminDashboard = () => {
               </ul>
             </div>
           </div>
+        </div>
+
+        {/* Recent Authors */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h2 className="text-2xl font-playfair text-forest mb-6">Recent Authors (Last 7 Days)</h2>
+          <ul className="space-y-2 text-sm text-soft-gray font-inter">
+            {recentAuthors.map((author) => (
+              <li key={author.id} className="border-b border-soft-gray/50 py-1">
+                <span className="font-medium text-forest">{author.name}</span> – {new Date(author.created_at).toLocaleDateString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Genre Requests */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h2 className="text-2xl font-playfair text-forest mb-6">Genre Requests</h2>
+          <ul className="space-y-2 text-sm text-soft-gray font-inter">
+            {genreRequests.map((request) => (
+              <li key={request.id} className="border-b border-soft-gray/50 py-1">
+                <span className="font-medium text-forest">{request.name}</span> – {request.status} – Requested by {request.requested_by__username}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Earnings Chart */}

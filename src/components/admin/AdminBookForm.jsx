@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ProtectedRoute from '../../components/ProtectedRoute';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
-import { USER } from '../../constants';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
-const EditBookPage = () => {
+const AdminBookForm = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,103 +27,49 @@ const EditBookPage = () => {
   });
 
   useEffect(() => {
-    fetchData();
+    fetchBook();
   }, [id]);
 
-  const fetchData = async () => {
-    const storedUser = localStorage.getItem(USER);
-    if (!storedUser) {
-      setError("Please log in to edit your book.");
-      setLoading(false);
-      return;
-    }
-
+  const fetchBook = async () => {
     try {
-      const storeRes = await api.get("/stores/mine/");
-      if (storeRes.data && !storeRes.data.detail) {
-        const bookRes = await api.get(`/books/book/${id}/`);
-        const genresRes = await api.get("/books/genres/");
+      const [bookRes, genresRes] = await Promise.all([
+        api.get(`/books/book/${id}/`),
+        api.get("/books/genres/"),
+      ]);
 
-        if (bookRes.data.store !== storeRes.data.id) {
-          setError("You can only edit books from your store.");
-          setLoading(false);
-          return;
-        }
-
-        setGenres(Array.isArray(genresRes.data) ? genresRes.data : []);
-
-        const book = bookRes.data;
-        console.log("author_details:", book.author_details);
-        setFormData({
-          title: book.title || "",
-          description: book.description || "",
-          price: book.price || "",
-          stock_quantity: book.stock_quantity || "",
-          published_year: book.published_year || "",
-          store: book.store || "",
-          cover_image: null,
-          authors: Array.isArray(book.author_details)
-            ? book.author_details.map(author => author.name).join(", ")
-            : "",
-          genres: Array.isArray(book.genres) ? book.genres.map(genre => genre.id || genre) : [],
-        });
-
-        setPreviewImage(book.cover_image || null);
-      } else {
-        setError("You need to own a store to manage books.");
-      }
+      const book = bookRes.data;
+      setGenres(Array.isArray(genresRes.data) ? genresRes.data : []);
+      setFormData({
+        title: book.title || "",
+        description: book.description || "",
+        price: book.price || "",
+        stock_quantity: book.stock_quantity || "",
+        published_year: book.published_year || "",
+        store: book.store || "",
+        cover_image: null,
+        authors: Array.isArray(book.author_details)
+          ? book.author_details.map(author => author.name).join(", ")
+          : "",
+        genres: Array.isArray(book.genres) ? book.genres.map(g => g.id || g) : [],
+      });
+      setPreviewImage(book.cover_image || null);
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || "Failed to load data.");
+      setError(err.response?.data?.detail || "Failed to load book data.");
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCancel = () => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.");
-    if (confirmCancel) {
-      navigate(`/store/books`);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, cover_image: file });
-      setPreviewImage(URL.createObjectURL(file));
-      setRemoveImage(false);
-    }
-  };
-
-  const handleMultiSelectChange = (e) => {
-    const { name, options } = e.target;
-    const selectedValues = Array.from(options)
-      .filter(option => option.selected)
-      .map(option => option.value);
-    setFormData({ ...formData, [name]: selectedValues });
-  };
-
-  const handleRemoveImage = () => {
-    setPreviewImage(null);
-    setFormData({ ...formData, cover_image: null });
-    setRemoveImage(true);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleEdit = async (e) => {
     e.preventDefault();
     setError("");
 
-    const authorsArray = formData.authors.split(",").map(a => a.trim()).filter(a => a.length > 0);
+    const authorsArray = formData.authors.split(",").map(a => a.trim()).filter(a => a);
     if (!formData.title || !formData.description || !formData.price ||
-      !formData.stock_quantity || !formData.published_year || !authorsArray.length ||
-      !formData.genres.length) {
-      setError("Please fill in all required fields.");
+        !formData.stock_quantity || !formData.published_year || !authorsArray.length ||
+        !formData.genres.length) {
+      setError("All fields are required.");
       return;
     }
 
@@ -136,33 +82,65 @@ const EditBookPage = () => {
     data.append("store", formData.store);
     if (formData.cover_image) {
       data.append("cover_image", formData.cover_image);
-    }
-    if (removeImage) {
-      data.append("cover_image", ""); // Signal to remove image if backend supports
+    } else if (removeImage) {
+      data.append("cover_image", "");
     }
     authorsArray.forEach(author => data.append("authors", author));
     formData.genres.forEach(genre => data.append("genres", genre));
 
     try {
-      await api.put(`/books/book/${id}/`, data, {
+      await api.put(`/books/book/${id}/`, data, { // Fixed endpoint to match EditBookPage
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Book updated successfully.");
-      navigate('/store/books');
+      alert("Book updated successfully!");
+      navigate("/admin/books");
     } catch (err) {
-      setError(err.response?.data?.detail || "Failed to save book.");
-      console.log(err);
+      setError(err.response?.data?.detail || "Failed to update book.");
+      console.error("Update error:", err);
     }
   };
 
-  if (loading) return <div className="text-center text-soft-gray font-inter">Loading...</div>;
-  if (error) return <div className="text-red-500 text-center font-inter">{error}</div>;
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleMultiSelectChange = (e) => {
+    const selected = Array.from(e.target.options)
+      .filter(o => o.selected)
+      .map(o => o.value);
+    setFormData({ ...formData, genres: selected });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, cover_image: file });
+      setPreviewImage(URL.createObjectURL(file));
+      setRemoveImage(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData({ ...formData, cover_image: null });
+    setPreviewImage(null);
+    setRemoveImage(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCancel = () => {
+    if (window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.")) {
+      navigate("/admin/books");
+    }
+  };
+
+  if (loading) return <LoadingIndicator />;
+  if (error) return <div className="text-red-500 text-center font-inter p-6">{error}</div>;
 
   return (
     <ProtectedRoute>
-      <div className="container mx-auto p-8 min-h-screen">
-        <h1 className="text-4xl text-forest mb-8 text-center font-playfair">Edit Book</h1>
-        <form onSubmit={handleEdit} className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6" encType="multipart/form-data">
+      <div className="container mx-auto p-8 min-h-screen bg-beige">
+        <h1 className="text-4xl font-playfair text-forest mb-8 text-center">Edit Book</h1>
+        <form onSubmit={handleEdit} className="max-w-2xl mx-auto bg-white shadow-md rounded-2xl p-6 space-y-6" encType="multipart/form-data">
           <div>
             <label htmlFor="title" className="block text-forest font-inter mb-1">Title</label>
             <input
@@ -207,7 +185,7 @@ const EditBookPage = () => {
               id="genres"
               name="genres"
               multiple
-              value={formData.genres || []}
+              value={formData.genres}
               onChange={handleMultiSelectChange}
               required
               className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
@@ -232,6 +210,7 @@ const EditBookPage = () => {
               onChange={handleChange}
               placeholder="e.g., 19.99"
               step="0.01"
+              min="0"
               required
               className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
             />
@@ -245,6 +224,7 @@ const EditBookPage = () => {
               value={formData.stock_quantity}
               onChange={handleChange}
               placeholder="e.g., 10"
+              min="0"
               required
               className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
             />
@@ -258,6 +238,8 @@ const EditBookPage = () => {
               value={formData.published_year}
               onChange={handleChange}
               placeholder="e.g., 2023"
+              min="0"
+              max={new Date().getFullYear()}
               required
               className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
             />
@@ -288,7 +270,10 @@ const EditBookPage = () => {
           </div>
           {error && <p className="text-red-500 text-center font-inter">{error}</p>}
           <div className="flex gap-4 justify-center">
-            <button type="submit" className="btn-primary flex-1">
+            <button
+              type="submit"
+              className="flex-1 bg-forest text-white px-4 py-2 rounded-md hover:bg-burnt-orange transition-colors font-inter"
+            >
               Update Book
             </button>
             <button
@@ -305,4 +290,4 @@ const EditBookPage = () => {
   );
 };
 
-export default EditBookPage;
+export default AdminBookForm;

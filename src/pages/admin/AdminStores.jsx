@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api";
-import AdminSidebar from "../../components/admin/AdminSidebar";
 import LoadingIndicator from "../../components/LoadingIndicator";
 
 function AdminStores() {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1); // Track the current page
+  const [pageSize, setPageSize] = useState(10); // Track the page size
+  const [statusFilter, setStatusFilter] = useState(""); // Track the status filter
+  const [totalPages, setTotalPages] = useState(1); // Track total number of pages
 
   useEffect(() => {
     fetchStores();
-  }, []);
+  }, [page, statusFilter]); // Re-fetch data when page or filter changes
 
   const fetchStores = async () => {
     try {
-      const res = await api.get("/stores/");
-      setStores(res.data);
+      const params = {
+        page: page,
+        page_size: pageSize,
+        ...(statusFilter && { status: statusFilter }), // Only add status filter if it's set
+      };
+      const res = await api.get("/stores/", { params });
+      setStores(res.data.results); // `results` holds the paginated data
+      setTotalPages(Math.ceil(res.data.count / pageSize)); // Calculate total pages
     } catch (error) {
       console.error("Error fetching stores:", error);
     } finally {
@@ -44,13 +53,39 @@ function AdminStores() {
     }
   };
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handleFilterChange = (event) => {
+    setStatusFilter(event.target.value);
+    setPage(1); // Reset to page 1 when filter changes
+  };
+
   if (loading) return <LoadingIndicator />;
 
   return (
     <div className="flex">
-      <AdminSidebar />
       <div className="flex-1 p-6 bg-beige min-h-screen">
         <h2 className="text-3xl font-playfair text-forest mb-6">Manage Stores</h2>
+
+        <div className="flex justify-between mb-4">
+          <div>
+            <label htmlFor="statusFilter" className="mr-2 text-forest font-inter">Filter by Status:</label>
+            <select
+              id="statusFilter"
+              value={statusFilter}
+              onChange={handleFilterChange}
+              className="border border-soft-gray px-2 py-1 rounded-md text-soft-gray font-inter"
+            >
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
         <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
           <table className="w-full border-collapse">
             <thead>
@@ -100,6 +135,26 @@ function AdminStores() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="flex justify-between mt-6">
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            className="bg-forest text-white px-3 py-1 rounded-md hover:bg-forest/80 disabled:bg-gray-300"
+          >
+            Previous
+          </button>
+          <span className="text-forest font-inter">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            className="bg-forest text-white px-3 py-1 rounded-md hover:bg-forest/80 disabled:bg-gray-300"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

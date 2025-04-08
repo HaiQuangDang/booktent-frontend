@@ -3,22 +3,33 @@ import { Link } from "react-router-dom";
 import api from "../../api";
 import LoadingIndicator from "../../components/LoadingIndicator";
 
-
 function AdminTransactions() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [adminFee, setAdminFee] = useState("");
   const [updating, setUpdating] = useState(false);
 
+  // Pagination and filter state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     fetchTransactions();
     fetchAdminFee();
-  }, []);
+  }, [page, statusFilter]); // Fetch data when page or filter changes
 
   const fetchTransactions = async () => {
     try {
-      const res = await api.get("/transactions/");
-      setTransactions(res.data);
+      const params = { 
+        page,
+        page_size: pageSize,
+        ...(statusFilter && { status: statusFilter }),
+      };
+      const res = await api.get("/transactions/", { params });
+      setTransactions(res.data.results); // Assumes 'results' holds paginated data
+      setTotalPages(Math.ceil(res.data.count / pageSize)); // Calculate total pages
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
@@ -53,12 +64,25 @@ function AdminTransactions() {
     }
   };
 
+  // Filter handler
+  const handleFilterChange = (event) => {
+    setStatusFilter(event.target.value);
+    setPage(1); // Reset to page 1 when filter changes
+  };
+
+  // Pagination handler
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
   if (loading) return <LoadingIndicator />;
 
   return (
     <div className="flex">
       <div className="flex-1 p-6 bg-beige min-h-screen">
         <h2 className="text-3xl font-playfair text-forest mb-6">Manage Transactions</h2>
+
+        {/* Admin Fee */}
         <div className="bg-white p-6 rounded-2xl shadow-sm mb-6">
           <h3 className="text-xl font-playfair text-forest mb-3">Admin Fee Percentage</h3>
           <div className="flex items-center space-x-2">
@@ -75,6 +99,25 @@ function AdminTransactions() {
             >
               {updating ? "Updating..." : "Update"}
             </button>
+          </div>
+        </div>
+
+        {/* Filter */}
+        <div className="flex justify-between mb-4">
+          <div>
+            <label htmlFor="statusFilter" className="mr-2 text-forest font-inter">Filter by Status:</label>
+            <select
+              id="statusFilter"
+              value={statusFilter}
+              onChange={handleFilterChange}
+              className="border border-soft-gray px-2 py-1 rounded-md text-soft-gray font-inter"
+            >
+              <option value="">All</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </select>
           </div>
         </div>
 
@@ -125,6 +168,27 @@ function AdminTransactions() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between mt-6">
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            className="bg-forest text-white px-3 py-1 rounded-md hover:bg-forest/80 disabled:bg-gray-300"
+          >
+            Previous
+          </button>
+          <span className="text-forest font-inter">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            className="bg-forest text-white px-3 py-1 rounded-md hover:bg-forest/80 disabled:bg-gray-300"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

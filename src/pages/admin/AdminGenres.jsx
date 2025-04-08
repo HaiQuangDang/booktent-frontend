@@ -51,6 +51,7 @@ function AdminGenres() {
         }
     };
 
+
     if (loading) return <LoadingIndicator />;
 
     return (

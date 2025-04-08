@@ -44,6 +44,8 @@ import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminTransactionDetail from "./pages/admin/AdminTransactionDetail";
 import AdminAuthors from "./pages/admin/AdminAuthors";
 import AdminGenres from "./pages/admin/AdminGenres";
+import AdminRequestGenres from "./pages/admin/AdminRequestGenres";
+import AdminBookFormPage from "./components/admin/AdminBookForm";
 
 
 function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, updateCartItemCount }) {
@@ -263,6 +265,14 @@ function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, upd
             }
           />
           <Route
+            path="books/:id/edit"
+            element={
+              <AdminRoute>
+                <AdminBookFormPage />
+              </AdminRoute>
+            }
+          />
+          <Route
             path="orders"
             element={
               <AdminRoute>
@@ -310,8 +320,15 @@ function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, upd
               </AdminRoute>
             }
           />
+          <Route
+            path="genre-requests"
+            element={
+              <AdminRoute>
+                <AdminRequestGenres />
+              </AdminRoute>
+            }
+          />
         </Route>
-
 
         <Route path="*" element={<NotFound />} />
       </Routes>
