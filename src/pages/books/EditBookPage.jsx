@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useParams, useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import api from '../../api';
 import { USER } from '../../constants';
 
@@ -9,6 +10,7 @@ const EditBookPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [genres, setGenres] = useState([]);
+  const [authors, setAuthors] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const [removeImage, setRemoveImage] = useState(false);
   const fileInputRef = useRef(null);
@@ -21,7 +23,7 @@ const EditBookPage = () => {
     stock_quantity: "",
     published_year: "",
     store: "",
-    authors: "",
+    authors: [],
     genres: [],
     cover_image: null,
   });
@@ -41,8 +43,11 @@ const EditBookPage = () => {
     try {
       const storeRes = await api.get("/stores/mine/");
       if (storeRes.data && !storeRes.data.detail) {
-        const bookRes = await api.get(`/books/book/${id}/`);
-        const genresRes = await api.get("/books/genres/");
+        const [bookRes, genresRes, authorsRes] = await Promise.all([
+          api.get(`/books/book/${id}/`),
+          api.get("/books/genres/"),
+          api.get("/books/authors/"),
+        ]);
 
         if (bookRes.data.store !== storeRes.data.id) {
           setError("You can only edit books from your store.");
@@ -50,10 +55,11 @@ const EditBookPage = () => {
           return;
         }
 
-        setGenres(Array.isArray(genresRes.data) ? genresRes.data : []);
-
         const book = bookRes.data;
-        console.log("author_details:", book.author_details);
+        console.log(book);
+        setGenres(genresRes.data || []);
+        setAuthors(authorsRes.data || []);
+
         setFormData({
           title: book.title || "",
           description: book.description || "",
@@ -63,9 +69,15 @@ const EditBookPage = () => {
           store: book.store || "",
           cover_image: null,
           authors: Array.isArray(book.author_details)
-            ? book.author_details.map(author => author.name).join(", ")
-            : "",
-          genres: Array.isArray(book.genres) ? book.genres.map(genre => genre.id || genre) : [],
+            ? book.author_details.map(author => ({ label: author.name, value: author.id }))
+            : [],
+          genres: Array.isArray(book.genre_names) && Array.isArray(book.genres)
+            ? book.genres.map((id, index) => ({
+              label: book.genre_names[index],
+              value: id
+            }))
+            : [],
+
         });
 
         setPreviewImage(book.cover_image || null);
@@ -81,8 +93,7 @@ const EditBookPage = () => {
   };
 
   const handleCancel = () => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.");
-    if (confirmCancel) {
+    if (window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.")) {
       navigate(`/store/books`);
     }
   };
@@ -100,14 +111,6 @@ const EditBookPage = () => {
     }
   };
 
-  const handleMultiSelectChange = (e) => {
-    const { name, options } = e.target;
-    const selectedValues = Array.from(options)
-      .filter(option => option.selected)
-      .map(option => option.value);
-    setFormData({ ...formData, [name]: selectedValues });
-  };
-
   const handleRemoveImage = () => {
     setPreviewImage(null);
     setFormData({ ...formData, cover_image: null });
@@ -119,10 +122,9 @@ const EditBookPage = () => {
     e.preventDefault();
     setError("");
 
-    const authorsArray = formData.authors.split(",").map(a => a.trim()).filter(a => a.length > 0);
     if (!formData.title || !formData.description || !formData.price ||
-      !formData.stock_quantity || !formData.published_year || !authorsArray.length ||
-      !formData.genres.length) {
+      !formData.stock_quantity || !formData.published_year ||
+      !formData.authors.length || !formData.genres.length) {
       setError("Please fill in all required fields.");
       return;
     }
@@ -138,10 +140,12 @@ const EditBookPage = () => {
       data.append("cover_image", formData.cover_image);
     }
     if (removeImage) {
-      data.append("cover_image", ""); // Signal to remove image if backend supports
+      data.append("cover_image", "");
     }
-    authorsArray.forEach(author => data.append("authors", author));
-    formData.genres.forEach(genre => data.append("genres", genre));
+
+
+    formData.authors.forEach(author => data.append("authors", author.value));
+    formData.genres.forEach(genre => data.append("genres", genre.value));
 
     try {
       await api.put(`/books/book/${id}/`, data, {
@@ -150,8 +154,8 @@ const EditBookPage = () => {
       alert("Book updated successfully.");
       navigate('/store/books');
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.detail || "Failed to save book.");
-      console.log(err);
     }
   };
 
@@ -163,6 +167,7 @@ const EditBookPage = () => {
       <div className="container mx-auto p-8 min-h-screen">
         <h1 className="text-4xl text-forest mb-8 text-center font-playfair">Edit Book</h1>
         <form onSubmit={handleEdit} className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6" encType="multipart/form-data">
+          {/* Title */}
           <div>
             <label htmlFor="title" className="block text-forest font-inter mb-1">Title</label>
             <input
@@ -173,9 +178,11 @@ const EditBookPage = () => {
               onChange={handleChange}
               placeholder="Enter book title"
               required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+              className="w-full p-2 border border-soft-gray rounded-md focus:ring-2 focus:ring-forest"
             />
           </div>
+
+          {/* Description */}
           <div>
             <label htmlFor="description" className="block text-forest font-inter mb-1">Description</label>
             <textarea
@@ -185,43 +192,35 @@ const EditBookPage = () => {
               onChange={handleChange}
               placeholder="Describe the book"
               required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter h-32 resize-y"
+              className="w-full p-2 border border-soft-gray rounded-md focus:ring-2 focus:ring-forest h-32 resize-y"
             />
           </div>
+
+          {/* Authors */}
           <div>
-            <label htmlFor="authors" className="block text-forest font-inter mb-1">Authors (comma-separated)</label>
-            <input
-              id="authors"
-              type="text"
-              name="authors"
+            <label htmlFor="authors" className="block text-forest font-inter mb-1">Authors</label>
+            <Select
+              isMulti
+              options={authors.map(a => ({ value: a.id, label: a.name }))}
               value={formData.authors}
-              onChange={handleChange}
-              placeholder="e.g., Jane Doe, John Smith"
-              required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+              onChange={(selected) => setFormData({ ...formData, authors: selected })}
+              className="text-soft-gray"
             />
           </div>
+
+          {/* Genres */}
           <div>
             <label htmlFor="genres" className="block text-forest font-inter mb-1">Genres</label>
-            <select
-              id="genres"
-              name="genres"
-              multiple
-              value={formData.genres || []}
-              onChange={handleMultiSelectChange}
-              required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
-            >
-              {genres.length > 0 ? (
-                genres.map(genre => (
-                  <option key={genre.id} value={genre.id}>{genre.name}</option>
-                ))
-              ) : (
-                <option disabled>No genres available</option>
-              )}
-            </select>
-            <p className="text-sm text-soft-gray mt-1 font-inter">Hold Ctrl/Cmd to select multiple</p>
+            <Select
+              isMulti
+              options={genres.map(g => ({ value: g.id, label: g.name }))}
+              value={formData.genres}
+              onChange={(selected) => setFormData({ ...formData, genres: selected })}
+              className="text-soft-gray"
+            />
           </div>
+
+          {/* Price */}
           <div>
             <label htmlFor="price" className="block text-forest font-inter mb-1">Price ($)</label>
             <input
@@ -233,9 +232,11 @@ const EditBookPage = () => {
               placeholder="e.g., 19.99"
               step="0.01"
               required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+              className="w-full p-2 border border-soft-gray rounded-md focus:ring-2 focus:ring-forest"
             />
           </div>
+
+          {/* Stock */}
           <div>
             <label htmlFor="stock_quantity" className="block text-forest font-inter mb-1">Stock Quantity</label>
             <input
@@ -244,11 +245,12 @@ const EditBookPage = () => {
               name="stock_quantity"
               value={formData.stock_quantity}
               onChange={handleChange}
-              placeholder="e.g., 10"
               required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+              className="w-full p-2 border border-soft-gray rounded-md focus:ring-2 focus:ring-forest"
             />
           </div>
+
+          {/* Published Year */}
           <div>
             <label htmlFor="published_year" className="block text-forest font-inter mb-1">Published Year</label>
             <input
@@ -257,11 +259,13 @@ const EditBookPage = () => {
               name="published_year"
               value={formData.published_year}
               onChange={handleChange}
-              placeholder="e.g., 2023"
+              placeholder="e.g., 2024"
               required
-              className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+              className="w-full p-2 border border-soft-gray rounded-md focus:ring-2 focus:ring-forest"
             />
           </div>
+
+          {/* Cover Image */}
           <div>
             <label htmlFor="cover_image" className="block text-forest font-inter mb-1">Cover Image</label>
             <input
@@ -271,7 +275,7 @@ const EditBookPage = () => {
               name="cover_image"
               onChange={handleFileChange}
               accept="image/*"
-              className="w-full p-2 border border-soft-gray rounded-md text-soft-gray font-inter file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:bg-forest file:text-white file:hover:bg-burnt-orange"
+              className="w-full p-2 border border-soft-gray rounded-md"
             />
             {previewImage && (
               <div className="mt-4 flex items-center gap-4">
@@ -279,23 +283,21 @@ const EditBookPage = () => {
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors font-inter"
+                  className="bg-red-500 text-white px-3 py-1 rounded-md"
                 >
                   Remove
                 </button>
               </div>
             )}
           </div>
+
+          {/* Error */}
           {error && <p className="text-red-500 text-center font-inter">{error}</p>}
+
+          {/* Actions */}
           <div className="flex gap-4 justify-center">
-            <button type="submit" className="btn-primary flex-1">
-              Update Book
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex-1 bg-soft-gray text-forest px-4 py-2 rounded-md hover:bg-gray-300 transition-colors font-inter"
-            >
+            <button type="submit" className="btn-primary flex-1">Update Book</button>
+            <button type="button" onClick={handleCancel} className="flex-1 bg-soft-gray text-forest px-4 py-2 rounded-md">
               Cancel
             </button>
           </div>

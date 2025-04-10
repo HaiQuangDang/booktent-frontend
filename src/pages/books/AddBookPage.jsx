@@ -2,12 +2,17 @@ import React, { useEffect, useState, useRef } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import api from "../../api";
 import { Link, useNavigate } from "react-router-dom";
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
+
 
 const AddBookPage = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
     const [isStoreOwner, setIsStoreOwner] = useState(false);
     const [genres, setGenres] = useState([]);
+    const [authorsList, setAuthorsList] = useState([]);
+
     const fileInputRef = useRef(null);
     const [coverPreview, setCoverPreview] = useState(null);
     const navigate = useNavigate();
@@ -15,7 +20,7 @@ const AddBookPage = () => {
         title: "",
         description: "",
         price: "",
-        authors: "",
+        authors: [],
         genres: [],
         stock_quantity: "",
         published_year: "",
@@ -39,6 +44,9 @@ const AddBookPage = () => {
             setFormData((prev) => ({ ...prev, store: storeRes.data.id }));
             const genresRes = await api.get(`/books/genres/`);
             setGenres(Array.isArray(genresRes.data) ? genresRes.data : []);
+            const authorsRes = await api.get(`/books/authors/`);
+            setAuthorsList(Array.isArray(authorsRes.data) ? authorsRes.data : []);
+
         } catch (err) {
             setError("Store not found");
         } finally {
@@ -68,44 +76,50 @@ const AddBookPage = () => {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
-    const handleMultiSelectChange = (e) => {
-        const { name, options } = e.target;
-        const selectedValues = Array.from(options)
-            .filter((option) => option.selected)
-            .map((option) => option.value);
-        setFormData((prevData) => ({ ...prevData, [name]: selectedValues }));
+    const handleAuthorChange = (selectedOptions) => {
+        setFormData((prev) => ({
+            ...prev,
+            authors: selectedOptions.map((option) => option.value),
+        }));
+    };
+
+    const handleGenreChange = (selectedOptions) => {
+        setFormData((prev) => ({
+            ...prev,
+            genres: selectedOptions.map((option) => option.value),
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-        const authorsArray = formData.authors.split(",").map((a) => a.trim()).filter((a) => a.length > 0);
-        if (
-            !formData.title || !formData.description || !formData.price ||
-            !formData.stock_quantity || !formData.published_year || !formData.cover_image ||
-            !authorsArray.length || !formData.genres.length
-        ) {
+        const { authors, genres, title, description, price, stock_quantity, published_year, cover_image, store } = formData;
+
+        if (!title || !description || !price || !stock_quantity || !published_year || !cover_image || !authors.length || !genres.length) {
             setError("Please fill in all required fields.");
             return;
         }
+
         const data = new FormData();
-        data.append("title", formData.title);
-        data.append("description", formData.description);
-        data.append("price", formData.price);
-        data.append("stock_quantity", formData.stock_quantity);
-        data.append("published_year", formData.published_year);
-        data.append("store", formData.store);
-        data.append("cover_image", formData.cover_image);
-        authorsArray.forEach((author) => data.append("authors", author));
-        formData.genres.forEach((genreId) => data.append("genres", genreId));
+        data.append("title", title);
+        data.append("description", description);
+        data.append("price", price);
+        data.append("stock_quantity", stock_quantity);
+        data.append("published_year", published_year);
+        data.append("store", store);
+        data.append("cover_image", cover_image);
+        authors.forEach((author) => data.append("authors", author));
+        genres.forEach((genreId) => data.append("genres", genreId));
 
         try {
+            console.log("Submitting data:", formData);
             await api.post("/books/book/", data, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             alert("Book added successfully!");
             navigate(`/store/books`);
         } catch (err) {
+            console.error(err);
             setError(err.response?.data?.detail || "Failed to save book.");
         }
     };
@@ -151,38 +165,33 @@ const AddBookPage = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="authors" className="block text-forest font-inter mb-1">Authors (comma-separated)</label>
-                        <input
-                            id="authors"
-                            type="text"
-                            name="authors"
-                            value={formData.authors}
-                            onChange={handleChange}
-                            placeholder="e.g., Jane Doe, John Smith"
-                            required
-                            className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
+                        <label className="block text-forest font-inter mb-1">Authors</label>
+                        <CreatableSelect
+                            isMulti
+                            options={authorsList.map((author) => ({
+                                label: author.name,
+                                value: author.name,
+                            }))}
+                            value={formData.authors.map((a) => ({ label: a, value: a }))}
+                            onChange={(selected) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    authors: selected.map((s) => s.value),
+                                }))
+                            }
                         />
+
                     </div>
                     <div>
-                        <label htmlFor="genres" className="block text-forest font-inter mb-1">Genres</label>
-                        <select
-                            id="genres"
+                        <label className="block text-forest font-inter mb-1">Genres</label>
+                        <Select
+                            isMulti
                             name="genres"
-                            multiple
-                            value={formData.genres || []}
-                            onChange={handleMultiSelectChange}
-                            required
-                            className="w-full p-2 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest text-soft-gray font-inter"
-                        >
-                            {genres.length > 0 ? (
-                                genres.map((genre) => (
-                                    <option key={genre.id} value={genre.id}>{genre.name}</option>
-                                ))
-                            ) : (
-                                <option disabled>No genres available</option>
-                            )}
-                        </select>
-                        <p className="text-sm text-soft-gray mt-1 font-inter">Hold Ctrl/Cmd to select multiple</p>
+                            options={genres.map((g) => ({ label: g.name, value: g.id }))}
+                            onChange={handleGenreChange}
+                            value={genres.filter((g) => formData.genres.includes(g.id)).map((g) => ({ label: g.name, value: g.id }))}
+                            className="text-sm"
+                        />
                     </div>
                     <div>
                         <label htmlFor="price" className="block text-forest font-inter mb-1">Price ($)</label>
@@ -251,9 +260,7 @@ const AddBookPage = () => {
                     </div>
                     {error && <p className="text-red-500 text-center font-inter">{error}</p>}
                     <div className="flex gap-4 justify-center">
-                        <button type="submit" className="btn-primary flex-1">
-                            Add Book
-                        </button>
+                        <button type="submit" className="btn-primary flex-1">Add Book</button>
                         <button
                             type="button"
                             onClick={() => navigate(`/store/books`)}

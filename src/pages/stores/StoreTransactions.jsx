@@ -7,7 +7,7 @@ const StoreTransactions = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
-
+  const [adminFee, setAdminFee] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -33,10 +33,19 @@ const StoreTransactions = () => {
         console.error("Error fetching transactions:", error);
       } finally {
         setLoading(false);
+      } 
+    };
+    const fetchAdminFee = async () => {
+      try {
+        const res = await api.get("/admin-fee/");
+        setAdminFee(res.data.admin_fee_percentage);
+      } catch (error) {
+        console.error("Error fetching admin fee:", error);
       }
     };
 
     fetchTransactions();
+    fetchAdminFee();
   }, [statusFilter, paymentFilter, page, pageSize]);
 
   const formatDate = (dateString) => {
@@ -139,7 +148,7 @@ const StoreTransactions = () => {
                     {transaction.status.toUpperCase()}
                   </p>
                   <p className="text-sm text-soft-gray font-inter">
-                    Fee: <span className="text-forest">${transaction.admin_fee}</span>
+                    Fee: <span className="text-forest">${transaction.admin_fee}</span> ({adminFee}%)
                   </p>
                   <p className="text-sm text-soft-gray font-inter">
                     Earnings: <span className="text-burnt-orange font-semibold">${transaction.store_earnings}</span>
