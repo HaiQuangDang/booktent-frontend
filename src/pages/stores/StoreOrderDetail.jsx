@@ -165,6 +165,16 @@ const StoreOrderDetail = () => {
                         <p>
                             <strong className="text-forest">Payment:</strong> {order.payment_method} - {order.payment_status}
                         </p>
+
+                        <p>
+                            <strong className="text-forest">Customer:</strong> {order.customer_name}
+                        </p>
+                        <p>
+                            <strong className="text-forest">Ship to addres:</strong> {order.address}
+                        </p>
+                        <p>
+                            <strong className="text-forest">Phone:</strong> {order.phone}
+                        </p>
                     </div>
 
                     <h3 className="text-lg font-semibold text-forest mt-6 mb-3 font-inter">Items</h3>

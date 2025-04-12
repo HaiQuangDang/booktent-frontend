@@ -77,52 +77,54 @@ const StoreOrders = () => {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="border border-soft-gray p-4 rounded-md mb-4 hover:bg-beige transition-colors"
+              className="bg-white shadow-sm rounded-xl p-6 mb-4 hover:shadow-md transition-shadow border border-soft-gray"
             >
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-lg font-semibold text-forest font-inter">Order #{order.id}</p>
-
-                  {/* Order Status */}
-                  <p className="text-soft-gray font-inter">
-                    Status:
-                    <span className={`ml-2 text-sm font-semibold px-2 py-1 rounded-md inline-block 
-                      ${order.order_status === 'completed' ? 'bg-forest text-white' :
-                        order.order_status === 'cancelled' ? 'bg-red-500 text-white' :
-                          'bg-beige text-forest'}
-                    `}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left: Order Info */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-semibold text-forest">Order #{order.id}</p>
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-full font-inter ${order.order_status === "completed"
+                          ? "bg-forest text-white"
+                          : order.order_status === "cancelled"
+                            ? "bg-red-500 text-white"
+                            : "bg-beige text-forest border border-soft-gray"
+                        }`}
+                    >
                       {order.order_status.toUpperCase()}
                     </span>
-                  </p>
-
-                  {/* Payment Info */}
-                  <p className="text-soft-gray font-inter">
-                    Payment:
-                    <span className="ml-1 font-semibold text-burnt-orange">
-                      {order.payment_method.toUpperCase()} - 
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-soft-gray font-inter">Payment:</p>
+                    <span className="font-semibold text-burnt-orange font-inter">
+                      {order.payment_method.toUpperCase()}
                     </span>
-                     
-                    <span className={`ml-2 text-sm font-semibold px-2 py-1 rounded-md inline-block 
-                      ${order.payment_status === 'paid' ? 'bg-forest text-white' :
-                        order.payment_status === 'failed' ? 'bg-red-500 text-white' :
-                          'bg-beige text-forest'}
-                    `}>
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-full font-inter ${order.payment_status === "paid"
+                          ? "bg-forest text-white"
+                          : order.payment_status === "failed"
+                            ? "bg-red-500 text-white"
+                            : "bg-beige text-forest border border-soft-gray"
+                        }`}
+                    >
                       {order.payment_status.toUpperCase()}
                     </span>
-                  </p>
-
-                  {/* Total Price */}
+                  </div>
                   <p className="text-soft-gray font-inter">
-                    Total: <span className="text-burnt-orange font-semibold">${order.total_price}</span>
+                    Total: <span className="text-burnt-orange font-semibold">${order.total_price.toFixed(2)}</span>
                   </p>
                 </div>
 
-                <Link
-                  to={`/store/orders/${order.id}`}
-                  className="text-forest hover:text-burnt-orange font-inter transition-colors"
-                >
-                  View Details
-                </Link>
+                {/* Right: Action */}
+                <div className="flex items-center justify-end">
+                  <Link
+                    to={`/store/orders/${order.id}`}
+                    className="bg-forest text-white px-4 py-2 rounded-md hover:bg-burnt-orange transition-colors font-inter text-sm"
+                  >
+                    View Details
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
