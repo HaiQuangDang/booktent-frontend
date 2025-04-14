@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import api from "../../api";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const GenreDetail = () => {
     const { id } = useParams();
@@ -40,7 +41,8 @@ const GenreDetail = () => {
     return (
         <div className="container mx-auto p-8 min-h-screen">
             <h1 className="text-4xl text-forest mb-8 text-center">Genre Detail</h1>
-            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {loading && <LoadingIndicator />}
+            {error && <p className="text-red-500 font-inter text-center">{error}</p>}
             {!genre && <p className="text-soft-gray font-inter text-center">Genre not found.</p>}
             {genre && (
                 <>

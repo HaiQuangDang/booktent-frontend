@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const ALLOWED_TRANSITIONS = {
     pending: ["processing"],
@@ -62,7 +63,6 @@ const StoreOrderDetail = () => {
         setCanceling(true);
         try {
             const res = await api.post(`/orders/cancel/${orderId}/`);
-            console.log(res.data.message)
         } catch (error) {
             console.error("Error canceling order:", error);
         } finally {
@@ -74,7 +74,7 @@ const StoreOrderDetail = () => {
         <div className="container mx-auto p-8 min-h-screen">
             <h1 className="text-4xl text-forest mb-8 text-center">Store Order Details</h1>
 
-            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {loading && <LoadingIndicator />}
             {!order && <p className="text-soft-gray font-inter text-center">Order not found.</p>}
             {order && (
                 <div className="bg-white shadow-md rounded-lg p-6 max-w-2xl mx-auto transition-all hover:shadow-lg">

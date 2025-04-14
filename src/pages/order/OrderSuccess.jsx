@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../api";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const OrderSuccess = () => {
     const [searchParams] = useSearchParams();
@@ -38,7 +39,13 @@ const OrderSuccess = () => {
             <div className="bg-white shadow-md rounded-lg p-6 max-w-lg mx-auto text-center">
                 <h2 className="text-2xl font-semibold text-forest mb-4 font-inter">Order Confirmed</h2>
                 <p className="text-soft-gray font-inter">{message}</p>
-                {loading && <p className="text-forest font-inter">Checking...</p>}
+                {loading && (
+                    <div className="mt-4">
+                        <LoadingIndicator />
+                        checking...
+                    </div>
+                )}
+                
             </div>
         </div>
     );

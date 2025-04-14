@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api";
 import { USER } from "../../constants";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const BookManager = () => {
   const [books, setBooks] = useState([]);
@@ -147,7 +148,8 @@ const BookManager = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingIndicator />;
+  if (error) return <div className="error-message">{error}</div>;
 
   if (!isStoreOwner) return <div className="error-message">{error}</div>;
 

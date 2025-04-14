@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { Link } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 const OrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
@@ -40,7 +41,12 @@ const OrderDetail = () => {
   return (
     <div className="container mx-auto p-8 min-h-screen">
       <h1 className="text-4xl text-forest mb-8 text-center">Order Details</h1>
-      {loading && <p className="text-soft-gray font-inter text-center">Loading order...</p>}
+      {loading && (
+        <div className="flex justify-center items-center h-screen">
+          <LoadingIndicator />
+          loading...
+        </div>
+      )}
       {!order && <p className="text-soft-gray font-inter text-center">Order not found.</p>}
       {order && (
         <div className="bg-white shadow-md rounded-lg p-6 max-w-2xl mx-auto transition-all hover:shadow-lg">
@@ -59,7 +65,7 @@ const OrderDetail = () => {
             <p>Phone: <span className="font-semibold">{order.phone}</span></p>
             <p>Store: <Link to={`/store/${order.store}`} className="font-semibold text-forest hover:text-burnt-orange transition-colors">{order.store_name}</Link></p>
           </div>
-  
+
           <h3 className="mt-6 text-lg font-semibold text-forest font-inter">Items</h3>
           <ul className="mt-2 space-y-2">
             {order.items.map(item => (
@@ -74,14 +80,13 @@ const OrderDetail = () => {
               </li>
             ))}
           </ul>
-  
+
           {order.order_status === "pending" && (
             <button
               onClick={handleCancelOrder}
               disabled={canceling}
-              className={`mt-6 px-6 py-2 rounded-md text-white font-inter transition-colors ${
-                canceling ? "bg-soft-gray cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
-              }`}
+              className={`mt-6 px-6 py-2 rounded-md text-white font-inter transition-colors ${canceling ? "bg-soft-gray cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                }`}
             >
               {canceling ? "Cancelling..." : "Cancel Order"}
             </button>

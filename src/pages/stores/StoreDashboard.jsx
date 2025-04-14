@@ -248,8 +248,8 @@ const StoreDashboard = () => {
               <button
                 key={type}
                 className={`px-4 py-2 rounded-full text-sm font-inter font-medium ${revenueView === type
-                    ? "bg-burnt-orange text-white"
-                    : "bg-soft-gray text-forest hover:bg-gray-300"
+                  ? "bg-burnt-orange text-white"
+                  : "bg-soft-gray text-forest hover:bg-gray-300"
                   } transition-colors`}
                 onClick={() => setRevenueView(type)}
               >
@@ -285,7 +285,9 @@ const StoreDashboard = () => {
                     border: "1px solid #e5e7eb",
                     borderRadius: "8px",
                     fontFamily: "Inter",
+                    color: "#4b5e40",
                   }}
+                  formatter={(value) => `$${value.toFixed(2)}`}
                 />
                 <Line type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={2} />
               </LineChart>

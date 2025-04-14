@@ -2,6 +2,7 @@ import AdminSidebar from "../../components/admin/AdminSidebar";
 import { useEffect, useState } from "react";
 import api from "../../api";
 import { USER } from "../../constants";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -43,6 +44,13 @@ const AdminUsers = () => {
       console.error("Error deleting user:", error);
     }
   };
+  if (loading) {  
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-beige">
+        <LoadingIndicator />
+      </div>
+    );
+  }
 
   return (
     <div className="flex">

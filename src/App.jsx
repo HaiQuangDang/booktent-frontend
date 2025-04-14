@@ -37,6 +37,7 @@ import OrderSuccess from "./pages/order/OrderSuccess";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminStores from "./pages/admin/AdminStores";
+import AdminStoreDetails from "./pages/admin/AdminStoreDetails";
 import AdminBooks from "./pages/admin/AdminBooks";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
@@ -46,7 +47,7 @@ import AdminAuthors from "./pages/admin/AdminAuthors";
 import AdminGenres from "./pages/admin/AdminGenres";
 import AdminRequestGenres from "./pages/admin/AdminRequestGenres";
 import AdminBookFormPage from "./components/admin/AdminBookForm";
-
+import BookSearch from "./pages/BookSearch";
 
 function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, updateCartItemCount }) {
   const location = useLocation();
@@ -257,6 +258,14 @@ function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, upd
             }
           />
           <Route
+            path="stores/:id"
+            element={
+              <AdminRoute>
+                <AdminStoreDetails />
+              </AdminRoute>
+            }
+          />
+          <Route
             path="books"
             element={
               <AdminRoute>
@@ -329,7 +338,7 @@ function MainAppContent({ user, myStore, cartItemCount, setUser, setMyStore, upd
             }
           />
         </Route>
-
+        <Route path="/search" element={<BookSearch />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

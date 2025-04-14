@@ -5,6 +5,7 @@ import { USER } from "../../constants";
 import BookOwn from "../../components/stores/BookOwn";
 import BookList from "../../components/books/BookList";
 import { Link } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 // This is for customer view
 
@@ -36,7 +37,7 @@ function StoreDetails() {
 
     return (
         <div className="container mx-auto p-8 min-h-screen">
-            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {loading && <LoadingIndicator />}
             {error && <p className="text-soft-gray font-inter text-center">{error}</p>}
             {store && (
                 <>

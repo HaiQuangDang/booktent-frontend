@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api";
 import { Link } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -23,11 +24,14 @@ const OrderList = () => {
 
   return (
     <div className="container mx-auto p-8 min-h-screen">
-       <h1 className="text-4xl text-forest mb-8 text-center">
-          Your Orders
-        </h1>
+      <h1 className="text-4xl text-forest mb-8 text-center">
+        Your Orders
+      </h1>
       {loading ? (
-        <p className="text-soft-gray font-inter text-center">Loading...</p>
+        <div className="flex justify-center items-center h-screen">
+          <LoadingIndicator />
+          loading...
+        </div>
       ) : orders.length === 0 ? (
         <p className="text-soft-gray font-inter text-center">No orders found.</p>
       ) : (

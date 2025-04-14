@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import api from '../../api';
 import { USER } from '../../constants';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 const EditBookPage = () => {
   const { id } = useParams();
@@ -56,7 +57,6 @@ const EditBookPage = () => {
         }
 
         const book = bookRes.data;
-        console.log(book);
         setGenres(genresRes.data || []);
         setAuthors(authorsRes.data || []);
 
@@ -159,7 +159,7 @@ const EditBookPage = () => {
     }
   };
 
-  if (loading) return <div className="text-center text-soft-gray font-inter">Loading...</div>;
+  if (loading) return <LoadingIndicator />;
   if (error) return <div className="text-red-500 text-center font-inter">{error}</div>;
 
   return (

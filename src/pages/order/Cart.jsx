@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const Cart = ({ updateCartItemCount }) => {
     const [cart, setCart] = useState(null);
@@ -72,7 +73,11 @@ const Cart = ({ updateCartItemCount }) => {
             <h1 className="text-4xl text-forest mb-8 text-center">
                 Shopping Cart
             </h1>
-            {loading && <p className="text-soft-gray font-inter text-center">Loading cart...</p>}
+            {loading &&
+                <div className="flex justify-center items-center min-h-screen">
+                    <LoadingIndicator />
+                    loading...
+                </div>}
             {!cart || !cart.items || cart.items.length === 0 ? (
                 <p className="text-soft-gray font-inter text-center">Your cart is empty.</p>
             ) : (

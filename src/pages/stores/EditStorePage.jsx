@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import ProtectedRoute from "../../components/ProtectedRoute";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 function EditStorePage() {
   const [id, setId] = useState("");
@@ -103,7 +104,7 @@ function EditStorePage() {
     }
   };
 
-  if (loading) return <div className="text-center text-soft-gray font-inter">Loading...</div>;
+  if (loading) return <LoadingIndicator />;
   if (errorMessage && !showDeleteConfirm) return (
     <div className="text-red-500 text-center font-inter p-8">
       {errorMessage}

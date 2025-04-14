@@ -35,7 +35,7 @@ function AdminGenres() {
             }
             fetchGenres(); // Refresh list
         } catch (error) {
-            alert("Failed to save genre. Please try again.");
+            alert(error.response?.data?.name[0] || "Failed to save genre.");
         }
         setSelectedGenre(null);  // Close the modal after saving
     };

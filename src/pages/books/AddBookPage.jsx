@@ -4,6 +4,7 @@ import api from "../../api";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 
 const AddBookPage = () => {
@@ -112,7 +113,6 @@ const AddBookPage = () => {
         genres.forEach((genreId) => data.append("genres", genreId));
 
         try {
-            console.log("Submitting data:", formData);
             await api.post("/books/book/", data, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
@@ -124,7 +124,7 @@ const AddBookPage = () => {
         }
     };
 
-    if (loading) return <div className="text-center text-soft-gray font-inter">Loading...</div>;
+    if (loading) return <LoadingIndicator />;
 
     if (error && isStoreOwner)
         return (

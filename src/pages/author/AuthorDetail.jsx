@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api";
 import { Link } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const AuthorDetail = () => {
     const { id } = useParams();
@@ -41,7 +42,12 @@ const AuthorDetail = () => {
     return (
         <div className="container mx-auto p-8 min-h-screen">
             <h1 className="text-4xl text-forest mb-8 text-center">Author Details</h1>
-            {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+            {loading && (
+                <div className="flex justify-center items-center min-h-screen bg-beige">
+                    <LoadingIndicator />
+                </div>
+            )}
+            {error && <p className="text-red-500 text-center">{error}</p>}
             {!author && <p className="text-soft-gray font-inter text-center">Author not found.</p>}
             {author && (
                 <>

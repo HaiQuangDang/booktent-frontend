@@ -72,6 +72,12 @@ function AdminOrderDetail() {
               <strong className="text-forest">Ordered Date:</strong>{" "}
               {new Date(order.created_at).toLocaleString()}
             </p>
+            <p className="font-inter text-soft-gray">
+              <strong className="text-forest">Address:</strong> {order.address}
+            </p>
+            <p className="font-inter text-soft-gray">
+              <strong className="text-forest">Phone:</strong> {order.phone}
+            </p>
           </div>
 
           {/* Ordered Books */}

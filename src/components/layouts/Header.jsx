@@ -3,8 +3,17 @@ import { Link } from "react-router-dom";
 import Logo from "../../assets/logofit.svg";
 import cart from "../../assets/cart.svg"
 import avatar from "../../assets/avatar-icon.svg"
+import { useNavigate } from "react-router-dom";
 
 export default function Header({ user, myStore, cartItemCount }) {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter" && searchTerm.trim() !== "") {
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -32,6 +41,9 @@ export default function Header({ user, myStore, cartItemCount }) {
       <div className="relative w-1/3">
         <input
           type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleSearch}
           placeholder="Search books..."
           className="w-full p-2 pl-4 pr-10 border border-soft-gray rounded-md focus:outline-none focus:ring-2 focus:ring-forest font-inter text-soft-gray"
         />
@@ -80,7 +92,7 @@ export default function Header({ user, myStore, cartItemCount }) {
         )}
 
         <Link to="/cart" className="relative text-forest hover:text-burnt-orange transition-colors">
-          <img src={cart} alt="Cart Icon"/>
+          <img src={cart} alt="Cart Icon" />
           {cartItemCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-burnt-orange text-white text-xs font-bold rounded-full px-1.5 py-0.5">
               {cartItemCount}

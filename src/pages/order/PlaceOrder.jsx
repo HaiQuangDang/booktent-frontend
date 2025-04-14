@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import api, { createStripeCheckoutSession } from "../../api";
 import stripeLogo from "../../assets/stripelogo.svg";
 import cashOnDelivery from "../../assets/cash-on-delivery.svg";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const PlaceOrder = ({ updateCartItemCount }) => {
     const location = useLocation();
@@ -77,7 +78,7 @@ const PlaceOrder = ({ updateCartItemCount }) => {
         }
     };
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <LoadingIndicator />;
     if (!cart) return <p>Cart not found.</p>;
     console.log(cart)
 

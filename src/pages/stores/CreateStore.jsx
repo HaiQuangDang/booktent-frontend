@@ -3,6 +3,7 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 
 function CreateStore() {
@@ -28,7 +29,7 @@ function CreateStore() {
     }
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingIndicator />;
 
   return (
     <ProtectedRoute>

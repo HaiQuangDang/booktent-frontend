@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -11,12 +12,11 @@ const Profile = () => {
       .get("/user/me/")
       .then((response) => {
         setUser(response.data);
-        console.log(response);
       })
       .catch((error) => console.error("Error fetching profile:", error));
   }, []);
 
-  if (!user) return <p className="text-soft-gray font-inter text-center">Loading...</p>;
+  if (!user) return <LoadingIndicator />;
 
   return (
     <div className="container mx-auto p-8 min-h-screen">

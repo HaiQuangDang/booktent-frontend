@@ -103,7 +103,7 @@ function AdminStores() {
                   <td className="p-4 text-soft-gray font-inter">{store.id}</td>
                   <td className="p-4">
                     <Link
-                      to={`/store/${store.id}`}
+                      to={`/admin/stores/${store.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-burnt-orange hover:underline font-inter"

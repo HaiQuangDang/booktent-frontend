@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const Setting = () => {
     const [user, setUser] = useState({
@@ -118,7 +119,7 @@ const Setting = () => {
         }
     };
 
-    if (loading) return <div className="text-center text-forest font-inter">Loading...</div>;
+    if (loading) return <LoadingIndicator />;
     if (updating) return <div className="text-center text-forest font-inter">Processing...</div>;
 
     return (

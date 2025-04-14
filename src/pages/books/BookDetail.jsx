@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { ACCESS_TOKEN } from "../../constants";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 function BookDetail({ updateCartItemCount }) {
     const { id } = useParams();
@@ -19,7 +20,6 @@ function BookDetail({ updateCartItemCount }) {
         try {
             const response = await api.get(`/books/book/${id}/`);
             setBook(response.data);
-            console.log(response.data);
         } catch (error) {
             console.log(error);
             setErrorMessage(error.response?.data?.detail || "Failed to fetch book.");
@@ -142,7 +142,11 @@ function BookDetail({ updateCartItemCount }) {
                     </div>
                 </div>
             ) : (
-                !errorMessage && <p className="text-center text-soft-gray font-inter">Loading...</p>
+                !errorMessage && (
+                    <div className="flex justify-center items-center min-h-screen">
+                        <LoadingIndicator />
+                    </div>
+                )
             )}
             {errorMessage && <p className="text-red-500 mt-4 text-center font-inter">{errorMessage}</p>}
         </div>

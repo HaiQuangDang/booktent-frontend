@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
 import { Link } from "react-router-dom";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const StoreOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -70,7 +71,7 @@ const StoreOrders = () => {
       </div>
 
       {/* Orders */}
-      {loading && <p className="text-soft-gray font-inter text-center">Loading...</p>}
+      {loading && <LoadingIndicator />}
       {!loading && !orders.length && <p className="text-soft-gray font-inter text-center">No orders found.</p>}
       {!loading && orders.length > 0 && (
         <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">

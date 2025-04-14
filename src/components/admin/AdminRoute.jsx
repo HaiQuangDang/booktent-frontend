@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState, useRef } from "react";
 import { ACCESS_TOKEN } from "../../constants";
+import LoadingIndicator from "../LoadingIndicator";
 
 function AdminRoute({ children }) {
     const [isAdmin, setIsAdmin] = useState(null);
@@ -26,23 +27,17 @@ function AdminRoute({ children }) {
         const decoded = jwtDecode(token);
         if (decoded.is_staff) {
             setIsAdmin(true);
-            console.log("is_staff: " + decoded.is_staff)
         } else {
             setIsAdmin(false);
             setErrorMessage("You must be an admin to access this page.");
-            console.log("is_staff: " + decoded.is_staff)
         }
     };
 
     if (isAdmin === null) {
-        return <div>Loading...</div>;
+        return <LoadingIndicator />;
     }
 
     if (!isAdmin) {
-        // if (!alertShown.current) {
-        //     alert(errorMessage); // Show alert only once
-        //     alertShown.current = true;
-        // }
         return <Navigate to="/" />;
     }
 

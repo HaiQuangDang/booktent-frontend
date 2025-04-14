@@ -11,6 +11,7 @@ const StoreSidebar = () => {
     { path: '/store/books', label: 'Books' },
     { path: '/store/setting', label: 'Setting' },
     { path: '/', label: 'Home' },
+    {path: "/logout", label: "Logout"},
   ];
 
   return (
