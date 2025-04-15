@@ -80,7 +80,6 @@ const PlaceOrder = ({ updateCartItemCount }) => {
 
     if (loading) return <LoadingIndicator />;
     if (!cart) return <p>Cart not found.</p>;
-    console.log(cart)
 
     return (
         <div className="container mx-auto p-8 min-h-screen">
