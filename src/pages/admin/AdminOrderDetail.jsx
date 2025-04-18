@@ -94,7 +94,7 @@ function AdminOrderDetail() {
               <tbody>
                 {order.items.map((item) => (
                   <tr key={item.id} className="border-b border-soft-gray/50 hover:bg-forest/5 transition-colors">
-                    <td className="p-4 text-soft-gray font-inter">{item.book.title}</td>
+                    <td className="p-4 text-soft-gray font-inter">{item.book_title}</td>
                     <td className="p-4 text-soft-gray font-inter">{item.quantity}</td>
                     <td className="p-4 text-burnt-orange font-inter font-semibold">${item.price}</td>
                   </tr>
